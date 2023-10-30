@@ -6,7 +6,7 @@ This project aims to develop a 3D visualization of an order book, commonly known
 
 ## Problem Statement
 
-The primary question this project aims to solve is, "How can the depth of market orders be visualized interactively and three-dimensionally to offer users enhanced insights and understanding of market conditions?" Traditional order books provide a two-dimensional view, often limiting the clarity and depth of market insights.
+The primary question this project aims to solve is, "How can the depth of market orders be visualized interactively and three-dimensionally to offer users enhanced insights and understanding of market conditions?" Traditional order books provide a two-dimensional view, often limiting the clarity and depth of market insights. We provide a solution to this question by providing another dimensionality to the view, in order to offer users a different medium to visualize market data in an interactive way. 
 
 ## Tech Stack
 
