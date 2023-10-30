@@ -53,3 +53,22 @@ The primary question this project aims to solve is, "How can the depth of market
     + Conduct meetings twice a week.
 * Communication
     + Maintain active communication within the team through discord. 
+
+## Timeline 
+* Week 1, due 10/30
+    + Finish Project Proposal
+* Week 2, due 11/6
+    + Design the data structures needed to create our order books
+* Week 3, due 11/13
+    + Begin working with exchange API's like BitMEX or IEX Cloud and start retrieving real time market data
+* Week 4, due 11/20: 
+    + Testing to ensure the API handling works
+* Week 5, due 11/27: 
+    + 3D visualization learning/working
+* Week 6, due 12/4: 
+    + 3D visualization learning/working
+* Week 7, due 12/11: 
+    + Final touches and extra stretch goals
+* Final due date: 12/16: 
+    + Presentation and set up a link 
+
