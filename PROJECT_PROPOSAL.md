@@ -48,3 +48,8 @@ The primary question this project aims to solve is, "How can the depth of market
     + Document the codebase.
     + Prepare for submission/presentation.
 
+## Meetings and Communications: 
+* Regular Check-ins
+    + Conduct meetings twice a week.
+* Communication
+    + Maintain active communication within the team through discord. 
