@@ -73,10 +73,12 @@ The primary question this project aims to solve is, "How can the depth of market
     + Presentation and set up a link 
 
 ## Teammates
+* While we will be working collaboratively to fulfill project deliverables, Joe and Kenny will prioritize developing, designing and testing for the Order book itself, while Justin and Ritul will focus more on the frontend testing and development. However, each member will be working together for all aspects of the project.
+
 * Kenny Kim: Graduating Spring 2025, May apply to Masters/PhD.
 * Justin Kim: Graduating Spring 2024, interested in MCS at UIUC
 * Joe Morrissey: Graduating Spring 2025
 * Ritul Soni: Graduating Spring 2024, Applying for MCS 
-While we will be working collaboratively to fulfill project deliverables, Joe and Kenny will prioritize developing, designing and testing for the Order book itself, while Justin and Ritul will focus more on the frontend testing and development. However, each member will be working together for all aspects of the project. 
+ 
 
 
