@@ -9,46 +9,34 @@ class Order {
     currentOrder : orderType; 
     shares : number; 
     limit : number; 
-    entryTime : number; 
-    eventTime : number; 
-    nextOrder : Order; 
-    prevOrder : Order; 
-    // TODO: add Limit parent node
+    entryTime : Date; 
+    eventTime : Date; 
+    nextOrder : Order | null; 
+    prevOrder : Order | null; 
+    parentLimit: Limit | null; 
+
+    constructor(
+        idNumber : number,
+        currentOrder : orderType, 
+        shares : number, 
+        limit : number, 
+        entryTime : Date,  
+        eventTime : Date, 
+        nextOrder : Order | null, 
+        prevOrder : Order | null, 
+        parentLimit: Limit | null, 
+    ) {
+        this.idNumber = idNumber;
+        this.currentOrder = currentOrder; 
+        this.shares = shares; 
+        this.limit = limit; 
+        this.entryTime = entryTime; 
+        this.eventTime = eventTime; 
+        this.nextOrder = nextOrder; 
+        this.prevOrder = prevOrder; 
+        this.parentLimit = parentLimit;
+    }
 }
-
-// class Order {
-//     idNumber: number;
-//     buyOrSell: boolean;
-//     shares: number;
-//     limit: number;
-//     entryTime: number;
-//     eventTime: number;
-//     nextOrder: Order | null;
-//     prevOrder: Order | null;
-//     parentLimit: Limit | null;
-
-//     constructor(
-//         idNumber: number,
-//         buyOrSell: boolean,
-//         shares: number,
-//         limit: number,
-//         entryTime: number,
-//         eventTime: number
-//     ) {
-//         this.idNumber = idNumber;
-//         this.buyOrSell = buyOrSell;
-//         this.shares = shares;
-//         this.limit = limit;
-//         this.entryTime = entryTime;
-//         this.eventTime = eventTime;
-//         this.nextOrder = null;
-//         this.prevOrder = null;
-//         this.parentLimit = null;
-//     }
-
-
-// }
-
 class Limit {
     limitPrice: number;
     size: number;
@@ -71,7 +59,7 @@ class Limit {
     }
 }
 
-class Book {
+class OrderBook {
     buyTree: Limit | null;
     sellTree: Limit | null;
     lowestSell: Limit | null;
@@ -84,7 +72,12 @@ class Book {
         this.highestBuy = null;
     }
 
-    add(order: Order): void {
-        // Add an order to the book
+    addOrder(order: Order): void {
+        // TODO: implement addOrder to add Orders into the doubly linked list
+    }
+    matchOrder(): void {
+        // TODO: implement matchOrder to check for trades
     }
 }
+
+// TODO: use the APIs previously mentioned to retrieve real market data. :)
