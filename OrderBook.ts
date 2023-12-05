@@ -59,7 +59,7 @@ class Limit {
     }
 }
 
-class OrderBook {
+class Book {
     buyTree: Limit | null;
     sellTree: Limit | null;
     lowestSell: Limit | null;
