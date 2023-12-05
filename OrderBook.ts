@@ -147,12 +147,48 @@ class Book {
         limitNode.totalVolume += order.shares;
     }
 
-    findOrder(id: number): void {
-
+    removeOrder(limitNode: Limit, order: Order): void {
+        if (order.prevOrder) {
+            order.prevOrder.nextOrder = order.nextOrder;
+        } else {
+            limitNode.headOrder = order.nextOrder;
+        }
+    
+        if (order.nextOrder) {
+            order.nextOrder.prevOrder = order.prevOrder;
+        } else {
+            limitNode.tailOrder = order.prevOrder;
+        }
+    
+        // Optionally remove the limit node if it's empty
+        if (limitNode.headOrder === null) {
+            this.removeLimitNode(limitNode);
+        }
     }
-
-    removeOrder(id: number): void {
-
+    
+    findNextHighestBuy(): Limit | null {
+        // Assuming this.highestBuy is already updated to its parent or left child as needed
+        let currentNode = this.highestBuy;
+        while (currentNode) {
+            if (currentNode.headOrder) {
+                return currentNode;
+            }
+            // Traverse to find the next highest node with an order
+            currentNode = this.getNextLowerLimit(currentNode);
+        }
+        return null;
+    }
+    findNextLowestSell(): Limit | null {
+        // Assuming this.lowestSell is already updated to its parent or right child as needed
+        let currentNode = this.lowestSell;
+        while (currentNode) {
+            if (currentNode.headOrder) {
+                return currentNode;
+            }
+            // Traverse to find the next lowest node with an order
+            currentNode = this.getNextHigherLimit(currentNode);
+        }
+        return null;
     }
 
     matchOrder(): void {
