@@ -1,32 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { BookAnimation, CameraMode } from './BookAnimation';
-import { OrderBookEvent, OrderBookEventHandler } from './FeedHandler/FeedHandler';
-import { Instrument, InstrumentRepository } from './instruments';
+import { OrderBookEvent, OrderBookEventHandler, BitMEXFeedHandler } from './FeedHandler/FeedHandler';
+import { Instrument, InstrumentRepository } from './CombinedInstruments';
 import { orderType, Order, Limit, Book } from './OrderBook';
 
-const GUIComponent = ({ instrumentRepository, feedManager, animation, Book, initialExchange, initialSymbol }) => {
+const GUIComponent = ({ InstrumentRepository, BitMEXFeedHandler, animation, Book, initialExchange, initialSymbol }) => {
     const [expanded, setExpanded] = useState(true);
     const [currentExchange, setCurrentExchange] = useState(initialExchange);
-    const [symbols, setSymbols] = useState(instrumentRepository.getExchangeInstruments(initialExchange).map(ins => ins.symbol));
+    const [symbols, setSymbols] = useState(InstrumentRepository.getExchangeInstruments(initialExchange).map(ins => ins.symbol));
     const [currentSymbol, setCurrentSymbol] = useState(initialSymbol);
     const [isCumulative, setIsCumulative] = useState(true);
     const [currentCameraMode, setCurrentCameraMode] = useState(CameraMode.Front);
     const cameraModes = [CameraMode.Front, CameraMode.XWing, CameraMode.FPS];
 
     useEffect(() => {
-        setSymbols(instrumentRepository.getExchangeInstruments(currentExchange).map(ins => ins.symbol));
+        setSymbols(InstrumentRepository.getExchangeInstruments(currentExchange).map(ins => ins.symbol));
         setCurrentSymbol(symbols[0]);
-    }, [currentExchange, instrumentRepository, symbols]);
+    }, [currentExchange, InstrumentRepository, symbols]);
 
     useEffect(() => {
-        const instrument = instrumentRepository.getExchangeInstrument(currentExchange, currentSymbol);
-        feedManager.disconnect();
-        book.clear();
+        const instrument = InstrumentRepository.getExchangeInstrument(currentExchange, currentSymbol);
+        BitMEXFeedHandler.disconnect();
+        Book.clear();
         animation.reset();
         animation.draw();
         animation.setTickSize(instrument.tickSize);
-        feedManager.connect(currentExchange, currentSymbol);
-    }, [currentExchange, currentSymbol, feedManager, instrumentRepository, animation, book]);
+        BitMEXFeedHandler.connect(currentExchange, currentSymbol);
+    }, [currentExchange, currentSymbol, BitMEXFeedHandler, InstrumentRepository, animation, Book]);
 
     useEffect(() => {
         animation.setCumulative(isCumulative);
@@ -43,7 +42,7 @@ const GUIComponent = ({ instrumentRepository, feedManager, animation, Book, init
                     <button onClick={() => setExpanded(false)}>Close</button>
                     <div>
                         <select value={currentExchange} onChange={e => setCurrentExchange(e.target.value)}>
-                            {instrumentRepository.getExchanges().map(exchange => (
+                            {InstrumentRepository.getExchanges().map(exchange => (
                                 <option key={exchange} value={exchange}>{exchange}</option>
                             ))}
                         </select>
