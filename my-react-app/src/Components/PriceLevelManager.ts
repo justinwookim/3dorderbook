@@ -1,9 +1,9 @@
-import { Side } from './L2Book'; // Update this path to where Side is located
-import { getPrecision, precisionRound, roundDownToTick } from '../Utils/utils.ts'; // Update this path to your utility functions
+import { orderType } from '../OrderBook'; // Update this path to where Side is located
+import { getPrecision, precisionRound, roundDownToTick } from '../Utils/utils'; // Update this path to your utility functions
 
 export class PriceLevelManager {
     private sizeMatrix: number[][];
-    private sideMatrix: Side[][];
+    private sideMatrix: orderType[][];
     private priceHistory: number[];
     private depth: number;
     private numTicks: number;

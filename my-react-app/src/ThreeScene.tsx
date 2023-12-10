@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import Stats from 'three/examples/jsm/libs/stats.module';
-import { OrderType, Order, Limit, Book } from 'my-react-app/src/OrderBook.ts';
-import { OrderBookEvent, TradeEvent } from './FeedHandler/FeedHandler.ts';
-import { FeedManager } from './FeedManager';
+import { orderType, Order, Limit, Book } from './OrderBook';
+import { OrderBookEvent, TradeEvent } from './FeedHandler/FeedHandler';
+import { FeedManager } from './FeedHandler';
 import { InstrumentRepository } from './instruments';
 import { Clock, Color, Fog, HemisphereLight, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 
@@ -18,7 +18,7 @@ const ThreeScene = () => {
         const scene = new Scene();
         const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const instrumentRepository = new InstrumentRepository();
-        const book = new L2Book();
+        const book = new Book();
         const feedManager = new FeedManager();
 
         const renderer = new WebGLRenderer();

@@ -1,10 +1,10 @@
-enum orderType {
+export enum orderType {
     BUY, 
     SELL, 
     // TODO: add more order types as needed   
 }
 
-class Order {
+export class Order {
     idNumber : number; 
     currentOrder : orderType; 
     shares : number; 
@@ -37,7 +37,7 @@ class Order {
         this.parentLimit = parentLimit;
     }
 }
-class Limit {
+export class Limit {
     limitPrice: number;
     size: number;
     totalVolume: number;
@@ -59,7 +59,7 @@ class Limit {
     }
 }
 
-class Book {
+export class Book {
     buyTree: Limit | null;
     sellTree: Limit | null;
     lowestSell: Limit | null;

@@ -1,5 +1,5 @@
 import { InstrumentRepository } from '../instruments';
-import { orderType, Order, Limit, Book } from '../OrderBook.ts';
+import { orderType, Order, Limit, Book } from '../OrderBook';
 
 export type OrderBookEventHandler = (event: OrderBookEvent) => void;
 export type TradeEventHandler = (event: TradeEvent) => void;
