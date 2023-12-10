@@ -4,7 +4,7 @@ import { OrderBookEvent, OrderBookEventHandler } from './FeedHandler/FeedHandler
 import { Instrument, InstrumentRepository } from './instruments';
 import { orderType, Order, Limit, Book } from './OrderBook';
 
-const GUIComponent = ({ instrumentRepository, feedManager, animation, book, initialExchange, initialSymbol }) => {
+const GUIComponent = ({ instrumentRepository, feedManager, animation, Book, initialExchange, initialSymbol }) => {
     const [expanded, setExpanded] = useState(true);
     const [currentExchange, setCurrentExchange] = useState(initialExchange);
     const [symbols, setSymbols] = useState(instrumentRepository.getExchangeInstruments(initialExchange).map(ins => ins.symbol));

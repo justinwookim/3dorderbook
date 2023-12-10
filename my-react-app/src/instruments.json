@@ -1,0 +1,252 @@
+{
+    "BitMEX": [
+      {
+        "symbol": "ADAUSD",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "ADAUSDT",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "APE_USDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "APEUSDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "APTUSD",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "APTUSDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "ARBUSD",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "ARBUSDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "AVAXUSD",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "AVAXUSDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "AXS_USDT",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "AXSUSD",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "BCHUSD",
+        "tickSize": 0.05
+      },
+      {
+        "symbol": "BCHUSDT",
+        "tickSize": 0.05
+      },
+      {
+        "symbol": "BLURUSD",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "BLURUSDT",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "BMEX_USDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "BMEXUSD",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "BMEXUSDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "BNBUSD",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "BNBUSDT",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "CROUSD",
+        "tickSize": 0.00001
+      },
+      {
+        "symbol": "CROUSDT",
+        "tickSize": 0.00001
+      },
+      {
+        "symbol": "DOGEUSD",
+        "tickSize": 0.00001
+      },
+      {
+        "symbol": "DOGEUSDT",
+        "tickSize": 0.00001
+      },
+      {
+        "symbol": "DOTUSD",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "DOTUSDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "EOSUSD",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "ETH_USDT",
+        "tickSize": 0.05
+      },
+      {
+        "symbol": "ETH_XBT",
+        "tickSize": 1e-7
+      },
+      {
+        "symbol": "ETHUSD",
+        "tickSize": 0.05
+      },
+      {
+        "symbol": "ETHUSD_ETH",
+        "tickSize": 0.05
+      },
+      {
+        "symbol": "ETHUSDT",
+        "tickSize": 0.05
+      },
+      {
+        "symbol": "FLRUSD",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "FLRUSDT",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "GMTUSD",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "GMTUSDT",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "GMXUSD",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "GMXUSDT",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "KLAYUSD",
+        "tickSize": 0.00001
+      },
+      {
+        "symbol": "KLAYUSDT",
+        "tickSize": 0.00001
+      },
+      {
+        "symbol": "LINK_USDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "LINKUSD",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "LTCUSD",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "LTCUSDT",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "LUNAUSD",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "LUNAUSDT",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "MATIC_USDT",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "MATICUSDT",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "NEARUSD",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "SOL_USDT",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "SOLUSD",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "SOLUSDT",
+        "tickSize": 0.01
+      },
+      {
+        "symbol": "TRX_USDT",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "UNI_USDT",
+        "tickSize": 0.001
+      },
+      {
+        "symbol": "USDTUSDC",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "XBT_USDT",
+        "tickSize": 0.5
+      },
+      {
+        "symbol": "XBTEUR",
+        "tickSize": 0.5
+      },
+      {
+        "symbol": "XBTUSD",
+        "tickSize": 0.5
+      },
+      {
+        "symbol": "XBTUSDT",
+        "tickSize": 0.5
+      },
+      {
+        "symbol": "XRPUSD",
+        "tickSize": 0.0001
+      },
+      {
+        "symbol": "XRPUSDT",
+        "tickSize": 0.0001
+      }
+    ]
+}
