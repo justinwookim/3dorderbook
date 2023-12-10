@@ -1,6 +1,6 @@
 import { Scene } from 'three';
-import { TradeEvent } from './feedhandlers/Feedhandler'; // Update this path to where TradeEvent is located
-import { TradeIndicator } from './TradeIndicator'; // Update this path to where TradeIndicator is located
+import { TradeEvent } from '../FeedHandler/FeedHandler'; // Update this path to where TradeEvent is located
+import { TradeIndicator } from '../TradeConfirmed'; // Update this path to where TradeIndicator is located
 
 export class TradeManager {
     private tradeBuffer: TradeEvent[];

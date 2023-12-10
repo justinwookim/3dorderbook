@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
+import { orderType, Order, Limit, Book } from './OrderBook';
 import { Mesh, MeshLambertMaterial, Scene, SphereGeometry } from 'three';
 
-const TradeIndicator = ({ scene, price, size, side, radius, position }) => {
+
+export const TradeIndicator = ({ scene, price, size, orderType, radius, position }) => {
     const meshRef = useRef();
 
     useEffect(() => {
