@@ -1,6 +1,11 @@
 import { Camera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
+
+export enum CameraMode {
+    Front = 'Front',
+}
+
 export class CameraManager {
     private camera: Camera;
     private cameraOrbitControls: OrbitControls;

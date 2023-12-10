@@ -1,4 +1,4 @@
-import { Object3D, Scene } from 'three';
+import { Object3D, Scene, Mesh } from 'three';
 
 export class SceneManager {
     private scene: Scene;
@@ -15,17 +15,22 @@ export class SceneManager {
         this.scene.remove(element);
     }
 
-    // Method to handle element disposal if needed
     disposeElement(element: Object3D): void {
-        if (element.geometry) {
-            element.geometry.dispose();
+        // Check if the element is a Mesh and has geometry and material properties
+        if (element instanceof Mesh) {
+            if (element.geometry) {
+                element.geometry.dispose();
+            }
+
+            if (Array.isArray(element.material)) {
+                element.material.forEach(material => material.dispose());
+            } else if (element.material) {
+                element.material.dispose();
+            }
         }
 
-        if (Array.isArray(element.material)) {
-            element.material.forEach(material => material.dispose());
-        } else if (element.material) {
-            element.material.dispose();
-        }
+        // If your application uses other Three.js object types with disposables,
+        // you can add additional checks and disposals here.
     }
 
     // You can add more methods here to handle other scene-related functionalities.
