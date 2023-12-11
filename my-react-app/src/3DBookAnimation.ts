@@ -1,5 +1,5 @@
 // BookAnimation.ts
-import { Scene, MeshLambertMaterial, BoxBufferGeometry, Color, Mesh, Object3D, PerspectiveCamera } from 'three';
+import { Scene, MeshLambertMaterial, Color, Mesh, Object3D, PerspectiveCamera } from 'three';
 import { TradeEvent } from './FeedHandler/FeedHandler'; // Update the path as needed
 import { SceneManager } from './Components/SceneManager';
 import { CameraManager, CameraMode } from './Components/CameraManager';
@@ -9,10 +9,10 @@ import { orderType, Order, Limit, Book } from './OrderBook';
 // Import any other dependencies
 
 export class BookAnimation {
-    private sceneManager: SceneManager;
-    private cameraManager: CameraManager;
-    private priceLevelManager: PriceLevelManager;
-    private instrumentRepository: InstrumentRepository; 
+    public sceneManager: SceneManager;
+    public cameraManager: CameraManager;
+    public priceLevelManager: PriceLevelManager;
+    public instrumentRepository: InstrumentRepository; 
     // Other private properties and dependencies
 
     constructor(scene: Scene, camera: PerspectiveCamera, book: Book, numTicks: number, depth: number, rendererDomElement: HTMLElement) {
@@ -41,9 +41,9 @@ export class BookAnimation {
         // Logic to update the animation each frame or on data change
     }
 
-    setCameraMode(mode: CameraMode): void {
-        this.cameraManager.setCameraMode(mode);
-    }
+    // setCameraMode(mode: CameraMode): void {
+    //     this.cameraManager.setCameraMode(mode);
+    // }
 
     addTrade(trade: TradeEvent): void {
         // Logic to add a trade

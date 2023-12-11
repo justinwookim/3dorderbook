@@ -22,14 +22,14 @@ export class CameraManager {
         this.cameraOrbitControls.enableZoom = true;
 
         // Set camera to the Front view by default
-        this.setFrontCamera();
+        // this.setFrontCamera();
     }
 
-    private setFrontCamera() {
-        this.camera.position.set(0, 40, (this.cameraXwingOffset * 2) / 14);
-        this.cameraOrbitControls.enabled = true;
-        this.cameraOrbitControls.target = new Vector3(0, 0, -this.cameraXwingOffset / 6);
-    }
+    // private setFrontCamera() {
+    //     this.camera.position.set(0, 40, (this.cameraXwingOffset * 2) / 14);
+    //     this.cameraOrbitControls.enabled = true;
+    //     this.cameraOrbitControls.target = new Vector3(0, 0, -this.cameraXwingOffset / 6);
+    // }
 
     updateCamera() {
         // Update the camera using OrbitControls

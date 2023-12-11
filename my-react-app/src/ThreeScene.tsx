@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { orderType, Order, Limit, Book } from './OrderBook';
 import { OrderBookEvent, TradeEvent } from './FeedHandler/FeedHandler';
-import { FeedManager } from './FeedHandler';
+import { BitMEXFeedHandler } from './FeedHandler/FeedHandler';
 import { InstrumentRepository, fetchBitMEXInstruments, initializeAndSaveInstruments } from './CombinedInstruments';
 import { BookAnimation } from './3DBookAnimation';
 import { Clock, Color, Fog, HemisphereLight, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
@@ -25,26 +25,26 @@ const ThreeScene = async () => {
         const clock = new Clock();
         const scene = new Scene();
         const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        let instrumentRepository; 
+        const [instrumentRepository, setInstrumentRepository] = useState<any>(); 
         initializeAndSaveInstruments().then(instrumentRepo => {
-            instrumentRepository = instrumentRepo; 
+            setInstrumentRepository(instrumentRepo); 
         }).catch(error => { 
             console.log(error); 
         });
   
         const book = new Book();
-        const feedManager = new FeedManager();
+        const feedManager = new BitMEXFeedHandler();
 
         const renderer = new WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
         const initialInstrument = instrumentRepository.getExchangeInstrument(INITIAL_EXCHANGE, INITIAL_SYMBOL);
-        const animation = new BookAnimation(scene, renderer, camera, book, NUM_TICKS_PER_SIDE, MAX_DEPTH);
-        animation.setTickSize(initialInstrument.tickSize);
+        const animation = new BookAnimation(scene, camera, book, NUM_TICKS_PER_SIDE, MAX_DEPTH, renderer.domElement);
+        animation.priceLevelManager.setTickSize(initialInstrument.tickSize);
         animation.create();
 
-        feedManager.connect(INITIAL_EXCHANGE, INITIAL_SYMBOL);
+        feedManager.connect(INITIAL_SYMBOL);
 
         const ambient = new HemisphereLight(0x999999);
         scene.add(ambient);
@@ -57,15 +57,15 @@ const ThreeScene = async () => {
         scene.background = backgroundColor;
         scene.fog = new Fog(backgroundColor, 0.9 * MAX_DEPTH, MAX_DEPTH);
 
-        const stats = Stats();
+        // const stats = Stats();
 
-        feedManager.onTradeEvent((trade: TradeEvent) => {
-            animation.addTrade(trade);
-        });
+        // feedManager.onTradeEvent((trade: TradeEvent) => {
+        //     animation.addTrade(trade);
+        // });
 
-        feedManager.onOrderBookEvent((event: OrderBookEvent) => {
-            book.applyOrderBookEvent(event);
-        });
+        // feedManager.onOrderBookEvent((event: OrderBookEvent) => {
+        //     book.publishOrderBookEvent(event);
+        // });
 
         setInterval(() => {
             animation.update();
@@ -81,8 +81,9 @@ const ThreeScene = async () => {
         const animate = () => {
             requestAnimationFrame(animate);
             const delta = clock.getDelta();
-            animation.updateCamera(delta);
-            stats.update();
+            // animation.cameraManager.updateCamera(delta);
+            animation.cameraManager.updateCamera(); 
+            // stats.update();
             renderer.render(scene, camera);
         };
         animate();
