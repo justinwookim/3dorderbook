@@ -1,4 +1,4 @@
-import { InstrumentRepository } from '../instruments';
+import { InstrumentRepository } from '../CombinedInstruments';
 import { orderType, Order, Limit, Book } from '../OrderBook';
 
 export type OrderBookEventHandler = (event: OrderBookEvent) => void;

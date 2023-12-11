@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { OrderBookEvent, OrderBookEventHandler, BitMEXFeedHandler } from './FeedHandler/FeedHandler';
 import { Instrument, InstrumentRepository } from './CombinedInstruments';
 import { orderType, Order, Limit, Book } from './OrderBook';
+import { CameraMode } from './Components/CameraManager';
 
 const GUIComponent = ({ InstrumentRepository, BitMEXFeedHandler, animation, Book, initialExchange, initialSymbol }) => {
     const [expanded, setExpanded] = useState(true);
@@ -10,7 +11,7 @@ const GUIComponent = ({ InstrumentRepository, BitMEXFeedHandler, animation, Book
     const [currentSymbol, setCurrentSymbol] = useState(initialSymbol);
     const [isCumulative, setIsCumulative] = useState(true);
     const [currentCameraMode, setCurrentCameraMode] = useState(CameraMode.Front);
-    const cameraModes = [CameraMode.Front, CameraMode.XWing, CameraMode.FPS];
+    const cameraModes = [CameraMode.Front];
 
     useEffect(() => {
         setSymbols(InstrumentRepository.getExchangeInstruments(currentExchange).map(ins => ins.symbol));
