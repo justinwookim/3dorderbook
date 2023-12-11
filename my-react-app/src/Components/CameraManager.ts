@@ -9,11 +9,11 @@ export enum CameraMode {
 export class CameraManager {
     private camera: Camera;
     private cameraOrbitControls: OrbitControls;
-    private cameraXwingOffset: number;
+    // private cameraXwingOffset: number;
 
     constructor(camera: Camera, rendererDomElement: HTMLElement, depth: number) {
         this.camera = camera;
-        this.cameraXwingOffset = Math.round(depth / 2);
+        // this.cameraXwingOffset = Math.round(depth / 2);
 
         // Initialize OrbitControls for the Front view
         this.cameraOrbitControls = new OrbitControls(camera, rendererDomElement);

@@ -33,7 +33,7 @@ export class InstrumentRepository {
 }
 
 // Define the function to fetch BitMEX instruments
-async function fetchBitMEXInstruments(): Promise<Instrument[]> {
+export async function fetchBitMEXInstruments(): Promise<Instrument[]> {
   console.log('Fetching BitMEX instruments...');
   const response = await fetch('https://www.bitmex.com/api/v1/instrument/active');
   const json = await response.json();

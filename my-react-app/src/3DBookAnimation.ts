@@ -1,27 +1,32 @@
 // BookAnimation.ts
-import { Scene, MeshLambertMaterial, BoxBufferGeometry, Color, Mesh, Object3D } from 'three';
+import { Scene, MeshLambertMaterial, BoxBufferGeometry, Color, Mesh, Object3D, PerspectiveCamera } from 'three';
 import { TradeEvent } from './FeedHandler/FeedHandler'; // Update the path as needed
 import { SceneManager } from './Components/SceneManager';
 import { CameraManager, CameraMode } from './Components/CameraManager';
 import { PriceLevelManager } from './Components/PriceLevelManager';
-import { InstrumentRepository } from './CombinedInstruments';
+import { Instrument, InstrumentRepository, initializeAndSaveInstruments, fetchBitMEXInstruments } from './CombinedInstruments';
+import { orderType, Order, Limit, Book } from './OrderBook';
 // Import any other dependencies
 
 export class BookAnimation {
     private sceneManager: SceneManager;
     private cameraManager: CameraManager;
     private priceLevelManager: PriceLevelManager;
-    private instrumentRepository: InstrumentRepository;
+    private instrumentRepository: InstrumentRepository; 
     // Other private properties and dependencies
 
-    constructor(scene: Scene, camera: Camera, book: Book, numTicks: number, depth: number) {
+    constructor(scene: Scene, camera: PerspectiveCamera, book: Book, numTicks: number, depth: number, rendererDomElement: HTMLElement) {
         this.sceneManager = new SceneManager(scene);
-        this.cameraManager = new CameraManager(camera, /* rendererDomElement */);
+        this.cameraManager = new CameraManager(camera, rendererDomElement, depth);
         this.priceLevelManager = new PriceLevelManager(depth, numTicks);
-        this.instrumentRepository = new InstrumentRepository(/* instruments data */);
+        this.setup();  
         // Initialize other properties
     }
 
+    async setup() {
+        const instruments = await fetchBitMEXInstruments(); 
+        this.instrumentRepository = new InstrumentRepository({ 'BitMEX': instruments }); 
+    }
     // Methods to manage the animation
 
     create(): void {
