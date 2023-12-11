@@ -3,10 +3,18 @@ import Stats from 'three/examples/jsm/libs/stats.module';
 import { orderType, Order, Limit, Book } from './OrderBook';
 import { OrderBookEvent, TradeEvent } from './FeedHandler/FeedHandler';
 import { FeedManager } from './FeedHandler';
-import { InstrumentRepository } from './instruments';
+import { InstrumentRepository, fetchBitMEXInstruments, initializeAndSaveInstruments } from './CombinedInstruments';
+import { BookAnimation } from './3DBookAnimation';
 import { Clock, Color, Fog, HemisphereLight, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 
-const ThreeScene = () => {
+// async function setupInstrumentRepository() {
+//     const instruments = await fetchBitMEXInstruments();
+//     const instrumentData = { 'BitMEX': instruments };
+//     const instrumentRepo = new InstrumentRepository(instrumentData);
+//     return instrumentRepo
+// }
+
+const ThreeScene = async () => {
     useEffect(() => {
         const UPDATE_PERIOD_MS = 50;
         const INITIAL_EXCHANGE = 'BitMEX';
@@ -17,7 +25,13 @@ const ThreeScene = () => {
         const clock = new Clock();
         const scene = new Scene();
         const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const instrumentRepository = new InstrumentRepository();
+        let instrumentRepository; 
+        initializeAndSaveInstruments().then(instrumentRepo => {
+            instrumentRepository = instrumentRepo; 
+        }).catch(error => { 
+            console.log(error); 
+        });
+  
         const book = new Book();
         const feedManager = new FeedManager();
 
