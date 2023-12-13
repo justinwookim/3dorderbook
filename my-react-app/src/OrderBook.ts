@@ -16,7 +16,7 @@ class OrderBook {
     addOrder(order: Order) {
         const orderList = order.orderType === 'BUY' ? this.buyOrders : this.sellOrders;
         orderList.push(order);
-        this.sortOrders(orderList, order.type);
+        this.sortOrders(orderList, order.orderType);
     }
 
     removeOrder(order: Order) {
@@ -45,6 +45,14 @@ class OrderBook {
 
             console.log(`Trade executed: ${tradeQuantity} at price ${buyOrder.price}`);
         }
+    }
+
+    getBuyOrders() {
+        return this.buyOrders; 
+    }
+
+    getSellOrders() {
+        return this.sellOrders;
     }
 
     // for debugging the data 
