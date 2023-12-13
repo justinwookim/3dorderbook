@@ -1,5 +1,5 @@
 // CombinedInstruments.ts
-import * as fs from 'fs';
+// import * as fs from 'fs';
 
 // Define the Instrument interface
 export interface Instrument {
@@ -50,7 +50,7 @@ export async function initializeAndSaveInstruments() {
   const instrumentData = { 'BitMEX': instruments };
   const instrumentRepo = new InstrumentRepository(instrumentData);
   
-  fs.writeFileSync('src/instruments.json', JSON.stringify(instrumentData, null, 2));
+  // fs.writeFileSync('src/instruments.json', JSON.stringify(instrumentData, null, 2));
   return instrumentRepo;
 }
 
