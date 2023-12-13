@@ -1,83 +1,62 @@
-export enum orderType {
-    BUY, 
-    SELL, 
-    // TODO: add more order types as needed   
+interface Order {
+    price: number;
+    quantity: number;
+    orderType: 'BUY' | 'SELL';
 }
 
-export class Order {
-    idNumber : number; 
-    currentOrder : orderType; 
-    shares : number; 
-    limit : number; 
-    entryTime : Date; 
-    eventTime : Date; 
-    nextOrder : Order | null; 
-    prevOrder : Order | null; 
-    parentLimit: Limit | null; 
-
-    constructor(
-        idNumber : number,
-        currentOrder : orderType, 
-        shares : number, 
-        limit : number, 
-        entryTime : Date,  
-        eventTime : Date, 
-        nextOrder : Order | null, 
-        prevOrder : Order | null, 
-        parentLimit: Limit | null, 
-    ) {
-        this.idNumber = idNumber;
-        this.currentOrder = currentOrder; 
-        this.shares = shares; 
-        this.limit = limit; 
-        this.entryTime = entryTime; 
-        this.eventTime = eventTime; 
-        this.nextOrder = nextOrder; 
-        this.prevOrder = prevOrder; 
-        this.parentLimit = parentLimit;
-    }
-}
-export class Limit {
-    limitPrice: number;
-    size: number;
-    totalVolume: number;
-    parent: Limit | null;
-    leftChild: Limit | null;
-    rightChild: Limit | null;
-    headOrder: Order | null;
-    tailOrder: Order | null;
-
-    constructor(limitPrice: number) {
-        this.limitPrice = limitPrice;
-        this.size = 0;
-        this.totalVolume = 0;
-        this.parent = null;
-        this.leftChild = null;
-        this.rightChild = null;
-        this.headOrder = null;
-        this.tailOrder = null;
-    }
-}
-
-export class Book {
-    buyTree: Limit | null;
-    sellTree: Limit | null;
-    lowestSell: Limit | null;
-    highestBuy: Limit | null;
+class OrderBook {
+    private buyOrders: Order[];
+    private sellOrders: Order[];
 
     constructor() {
-        this.buyTree = null;
-        this.sellTree = null;
-        this.lowestSell = null;
-        this.highestBuy = null;
+        this.buyOrders = [];
+        this.sellOrders = [];
     }
 
-    addOrder(order: Order): void {
-        // TODO: implement addOrder to add Orders into the doubly linked list
+    addOrder(order: Order) {
+        const orderList = order.orderType === 'BUY' ? this.buyOrders : this.sellOrders;
+        orderList.push(order);
+        this.sortOrders(orderList, order.type);
     }
-    matchOrder(): void {
-        // TODO: implement matchOrder to check for trades
+
+    removeOrder(order: Order) {
+        const orderList = order.orderType === 'BUY' ? this.buyOrders : this.sellOrders;
+        const index = orderList.findIndex(o => o.price === order.price && o.quantity === order.quantity);
+        if (index > -1) {
+            orderList.splice(index, 1);
+        }
+    }
+
+    matchOrders() {
+        while (this.buyOrders.length > 0 && this.sellOrders.length > 0 && this.buyOrders[0].price >= this.sellOrders[0].price) {
+            const buyOrder = this.buyOrders[0];
+            const sellOrder = this.sellOrders[0];
+
+            // Determine the trade quantity
+            const tradeQuantity = Math.min(buyOrder.quantity, sellOrder.quantity);
+
+            // Adjust quantities
+            buyOrder.quantity -= tradeQuantity;
+            sellOrder.quantity -= tradeQuantity;
+
+            // Remove the order from the list if its quantity becomes 0
+            if (buyOrder.quantity === 0) this.buyOrders.shift();
+            if (sellOrder.quantity === 0) this.sellOrders.shift();
+
+            console.log(`Trade executed: ${tradeQuantity} at price ${buyOrder.price}`);
+        }
+    }
+
+    // for debugging the data 
+    displayBook() {
+        console.log("Buy Orders:");
+        this.buyOrders.forEach(o => console.log(`Price: ${o.price}, Quantity: ${o.quantity}`));
+        console.log("Sell Orders:");
+        this.sellOrders.forEach(o => console.log(`Price: ${o.price}, Quantity: ${o.quantity}`));
+    }
+
+    private sortOrders(orders: Order[], orderType: 'BUY' | 'SELL') {
+        orders.sort((a, b) => orderType === 'BUY' ? b.price - a.price : a.price - b.price);
     }
 }
 
-// TODO: use the APIs previously mentioned to retrieve real market data. :)

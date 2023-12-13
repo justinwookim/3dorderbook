@@ -1,5 +1,5 @@
 import { InstrumentRepository } from '../CombinedInstruments';
-import { orderType, Order, Limit, Book } from '../OrderBook';
+import { orderType, OrderBook} from '../OrderBook';
 
 export type OrderBookEventHandler = (event: OrderBookEvent) => void;
 export type TradeEventHandler = (event: TradeEvent) => void;
@@ -23,7 +23,7 @@ export class BitMEXFeedHandler {
     private orderBookEventHandlers: OrderBookEventHandler[] = [];
     private tradeEventHandlers: TradeEventHandler[] = [];
     private tradingSymbol: string = '';
-    private instrumentRepo = new InstrumentRepository();
+    // private instrumentRepo = new InstrumentRepository();
 
     private getWebSocket(): WebSocket {
         if (!this.webSocket) {
@@ -84,10 +84,10 @@ export class BitMEXFeedHandler {
             const priceLevel: PriceLevel = {
                 price: level.price,
                 size: level.size,
-                orderType: level.orderType === 'Buy' ? orderType.Buy : orderType.Sell
+                orderType: level.orderType === 'BUY' ? orderType.BUY : orderType.SELL
             };
 
-            if (priceLevel.orderType === orderType.Buy) {
+            if (priceLevel.orderType === orderType.BUY) {
                 processedBids.push(priceLevel);
             } else {
                 processedAsks.push(priceLevel);
@@ -108,7 +108,7 @@ export class BitMEXFeedHandler {
             const trade: TradeEvent = {
                 price: tradeData.price,
                 size: tradeData.size,
-                orderType: tradeData.orderType === 'Buy' ? orderType.Buy : orderType.Sell
+                orderType: tradeData.orderType === 'BUY' ? orderType.BUY : orderType.SELL
             };
             this.publishTradeEvent(trade);
         });
