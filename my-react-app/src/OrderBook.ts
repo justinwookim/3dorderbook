@@ -1,10 +1,15 @@
-interface Order {
-    price: number;
-    quantity: number;
-    orderType: 'BUY' | 'SELL';
+export enum orderType {
+    BUY = 'BUY',
+    SELL = 'SELL',
 }
 
-class OrderBook {
+export interface Order {
+    price: number;
+    quantity: number;
+    orderType: orderType;
+}
+
+export class OrderBook {
     private buyOrders: Order[];
     private sellOrders: Order[];
 

@@ -1,13 +1,13 @@
 import { InstrumentRepository } from '../CombinedInstruments';
-import { orderType, OrderBook} from '../OrderBook';
+import { orderType, OrderBook, Order} from '../OrderBook';
 
 export type OrderBookEventHandler = (event: OrderBookEvent) => void;
 export type TradeEventHandler = (event: TradeEvent) => void;
 
 export interface OrderBookEvent {
-    action: OrderBookAction,
-    bids: PriceLevel[],
-    asks: PriceLevel[]
+    // action: OrderBookAction,
+    bids: Order[],
+    asks: Order[]
 }
 
 export interface TradeEvent {
@@ -77,25 +77,25 @@ export class BitMEXFeedHandler {
     }
 
     private processOrderBookData(data: any): void {
-        const processedBids: PriceLevel[] = [];
-        const processedAsks: PriceLevel[] = [];
+        const processedBids: Order[] = [];
+        const processedAsks: Order[] = [];
 
         data.data.forEach((level: any) => {
-            const priceLevel: PriceLevel = {
+            const order: Order = {
                 price: level.price,
-                size: level.size,
+                quantity: level.quantity,
                 orderType: level.orderType === 'BUY' ? orderType.BUY : orderType.SELL
             };
 
-            if (priceLevel.orderType === orderType.BUY) {
-                processedBids.push(priceLevel);
+            if (order.orderType === orderType.BUY) {
+                processedBids.push(order);
             } else {
-                processedAsks.push(priceLevel);
+                processedAsks.push(order);
             }
         });
 
         const event: OrderBookEvent = {
-            action: data.action === 'partial' ? OrderBookAction.Partial : OrderBookAction.Update,
+            // action: data.action === 'partial' ? OrderBookAction.Partial : OrderBookAction.Update,
             bids: processedBids,
             asks: processedAsks
         };

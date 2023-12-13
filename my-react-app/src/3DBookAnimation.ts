@@ -5,7 +5,7 @@ import { SceneManager } from './Components/SceneManager';
 import { CameraManager, CameraMode } from './Components/CameraManager';
 import { PriceLevelManager } from './Components/PriceLevelManager';
 import { Instrument, InstrumentRepository, initializeAndSaveInstruments, fetchBitMEXInstruments } from './CombinedInstruments';
-import { orderType, Order, Limit, Book } from './OrderBook';
+import { orderType, Order, OrderBook} from './OrderBook';
 // Import any other dependencies
 
 export class BookAnimation {
@@ -15,7 +15,7 @@ export class BookAnimation {
     public instrumentRepository: InstrumentRepository; 
     // Other private properties and dependencies
 
-    constructor(scene: Scene, camera: PerspectiveCamera, book: Book, numTicks: number, depth: number, rendererDomElement: HTMLElement) {
+    constructor(scene: Scene, camera: PerspectiveCamera, book: OrderBook, numTicks: number, depth: number, rendererDomElement: HTMLElement) {
         this.sceneManager = new SceneManager(scene);
         this.cameraManager = new CameraManager(camera, rendererDomElement, depth);
         this.priceLevelManager = new PriceLevelManager(depth, numTicks);

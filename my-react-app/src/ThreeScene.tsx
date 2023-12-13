@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Stats from 'three/examples/jsm/libs/stats.module';
-import { orderType, Order, Limit, Book } from './OrderBook';
+import { orderType, Order, OrderBook } from './OrderBook';
 import { OrderBookEvent, TradeEvent } from './FeedHandler/FeedHandler';
 import { BitMEXFeedHandler } from './FeedHandler/FeedHandler';
 import { InstrumentRepository, fetchBitMEXInstruments, initializeAndSaveInstruments } from './CombinedInstruments';
@@ -32,7 +32,7 @@ const ThreeScene = async () => {
             console.log(error); 
         });
   
-        const book = new Book();
+        const book = new OrderBook();
         const feedManager = new BitMEXFeedHandler();
 
         const renderer = new WebGLRenderer();
