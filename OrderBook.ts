@@ -36,6 +36,27 @@ class Order {
         this.prevOrder = prevOrder; 
         this.parentLimit = parentLimit;
     }
+
+    // Method to check if the order can be matched with another order
+    canMatchWith(otherOrder: Order): boolean {
+        // Check if the orders are of opposite types (buy and sell)
+        return (
+            this.currentOrder !== otherOrder.currentOrder && // Assuming orderType is 'buy' or 'sell'
+            ((this.currentOrder === 'buy' && this.limit >= otherOrder.limit) || // For buy order
+            (this.currentOrder === 'sell' && this.limit <= otherOrder.limit)) // For sell order
+        );
+    }
+
+    // Method to execute a matched order
+    executeMatchedOrder(otherOrder: Order): void {
+        // Perform order execution actions here
+        // For example, updating order quantities, executing trades, etc.
+        // This part would involve your business logic for executing trades
+        console.log(`Matched order ${this.idNumber} with order ${otherOrder.idNumber}`);
+        // Update order quantities, execute trade, etc.
+    }
+
+    
 }
 class Limit {
     limitPrice: number;
@@ -73,10 +94,150 @@ class Book {
     }
 
     addOrder(order: Order): void {
-        // TODO: implement addOrder to add Orders into the doubly linked list
+        let tree = (order.currentOrder === orderType.BUY) ? this.buyTree : this.sellTree;
+
+        // Find or create the limit node
+        let limitNode = this.findOrCreateLimitNode(tree, order.limit);
+
+        // Add the order to the limit node's linked list
+        this.insertOrderToLimitNode(limitNode, order);
+
+        // Update highestBuy or lowestSell if necessary
+        if (order.currentOrder === orderType.BUY && (this.highestBuy === null || order.limit > this.highestBuy.limitPrice)) {
+            this.highestBuy = limitNode;
+        } else if (order.currentOrder === orderType.SELL && (this.lowestSell === null || order.limit < this.lowestSell.limitPrice)) {
+            this.lowestSell = limitNode;
+        }
     }
+
+    findOrCreateLimitNode(treeRoot: Limit | null, limitPrice: number): Limit {
+        if (!treeRoot) {
+            return new Limit(limitPrice);
+        }
+    
+        if (limitPrice < treeRoot.limitPrice) {
+            if (!treeRoot.leftChild) {
+                treeRoot.leftChild = new Limit(limitPrice);
+                return treeRoot.leftChild;
+            } else {
+                return this.findOrCreateLimitNode(treeRoot.leftChild, limitPrice);
+            }
+        } else if (limitPrice > treeRoot.limitPrice) {
+            if (!treeRoot.rightChild) {
+                treeRoot.rightChild = new Limit(limitPrice);
+                return treeRoot.rightChild;
+            } else {
+                return this.findOrCreateLimitNode(treeRoot.rightChild, limitPrice);
+            }
+        } else {
+            return treeRoot;
+        }
+    }
+
+    insertOrderToLimitNode(limitNode: Limit, order: Order): void {
+        if (!limitNode.headOrder) {
+            limitNode.headOrder = limitNode.tailOrder = order;
+        } else {
+            limitNode.tailOrder.nextOrder = order;
+            order.prevOrder = limitNode.tailOrder;
+            limitNode.tailOrder = order;
+        }
+        // Update the size and total volume of the limit node
+        limitNode.size++;
+        limitNode.totalVolume += order.shares;
+    }
+
+    removeOrder(limitNode: Limit, order: Order): void {
+        if (order.prevOrder) {
+            order.prevOrder.nextOrder = order.nextOrder;
+        } else {
+            limitNode.headOrder = order.nextOrder;
+        }
+    
+        if (order.nextOrder) {
+            order.nextOrder.prevOrder = order.prevOrder;
+        } else {
+            limitNode.tailOrder = order.prevOrder;
+        }
+    
+        // Optionally remove the limit node if it's empty
+        if (limitNode.headOrder === null) {
+            this.removeLimitNode(limitNode);
+        }
+    }
+    
+    findNextHighestBuy(): Limit | null {
+        // Assuming this.highestBuy is already updated to its parent or left child as needed
+        let currentNode = this.highestBuy;
+        while (currentNode) {
+            if (currentNode.headOrder) {
+                return currentNode;
+            }
+            // Traverse to find the next highest node with an order
+            currentNode = this.getNextLowerLimit(currentNode);
+        }
+        return null;
+    }
+    findNextLowestSell(): Limit | null {
+        // Assuming this.lowestSell is already updated to its parent or right child as needed
+        let currentNode = this.lowestSell;
+        while (currentNode) {
+            if (currentNode.headOrder) {
+                return currentNode;
+            }
+            // Traverse to find the next lowest node with an order
+            currentNode = this.getNextHigherLimit(currentNode);
+        }
+        return null;
+    }
+
     matchOrder(): void {
         // TODO: implement matchOrder to check for trades
+        if (!this.buyTree || !this.sellTree) {
+            // Handle empty trees or invalid state
+            return;
+        }
+
+        let buyLimit = this.highestBuy;
+        let sellLimit = this.lowestSell;
+
+        while (buyLimit && sellLimit && buyLimit.limitPrice >= sellLimit.limitPrice) {
+            // Loop until no more compatible orders can be found
+            let buyOrder = buyLimit.headOrder;
+            let sellOrder = sellLimit.headOrder;
+
+            while (buyOrder && sellOrder) {
+                if (buyOrder.canMatchWith(sellOrder)) {
+                    // Execute matched orders
+                    buyOrder.executeMatchedOrder(sellOrder);
+
+                    // Update quantities, remove orders, etc.
+                    // (This part would depend on your implementation)
+
+                    // Move to the next orders at these limits
+                    buyOrder = buyOrder.nextOrder;
+                    sellOrder = sellOrder.nextOrder;
+                } else {
+                    // Move to the next order
+                    if (buyOrder.entryTime < sellOrder.entryTime) {
+                        buyOrder = buyOrder.nextOrder;
+                    } else {
+                        sellOrder = sellOrder.nextOrder;
+                    }
+                }
+            }
+
+            // Move to the next limits
+            if (buyLimit.limitPrice === sellLimit.limitPrice) {
+                buyLimit = buyLimit.parent || null;
+                sellLimit = sellLimit.parent || null;
+            } else if (buyLimit.limitPrice > sellLimit.limitPrice) {
+                sellLimit = sellLimit.rightChild || null;
+            } else {
+                buyLimit = buyLimit.leftChild || null;
+            }
+        } 
+
     }
 }
 
