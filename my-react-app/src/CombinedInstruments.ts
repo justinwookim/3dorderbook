@@ -34,21 +34,34 @@ export class InstrumentRepository {
 
 // Define the function to fetch BitMEX instruments
 export async function fetchBitMEXInstruments(): Promise<Instrument[]> {
-  console.log('Fetching BitMEX instruments...');
-  const response = await fetch('https://www.bitmex.com/api/v1/instrument/active');
+  console.log('Fetching Kraken instruments...');
+  const response = await fetch('https://api.kraken.com/0/public/AssetPairs');
   const json = await response.json();
-  return json.map((x: any) => ({
-    symbol: x.symbol,
-    tickSize: x.tickSize,
-  }));
+  console.log(json); 
+  const instruments: Instrument[] = []
+  for (const x in json.result) {
+    if (json.result[x].wsname === undefined) continue
+    if (json.result[x].status !== 'online') continue
+    const tickSize = parseFloat(json.result[x].tick_size)
+    const symbol = json.result[x].wsname
+    const instrument: Instrument = { symbol, tickSize }
+    instruments.push(instrument)
+  }
+  return instruments; 
+  // return json.map((x: any) => ({
+  //   symbol: x.symbol,
+  //   tickSize: x.tickSize,
+  // }));
 }
 
 // Optionally, define a function to initialize the InstrumentRepository
 // with fetched data and save to a file
 export async function initializeAndSaveInstruments() {
   const instruments = await fetchBitMEXInstruments();
-  const instrumentData = { 'BitMEX': instruments };
+  const instrumentData = { 'Kraken': instruments };
   const instrumentRepo = new InstrumentRepository(instrumentData);
+  console.log("TESTING"); 
+  console.log(instrumentRepo.getExchangeInstruments('Kraken')); 
   
   // fs.writeFileSync('src/instruments.json', JSON.stringify(instrumentData, null, 2));
   return instrumentRepo;

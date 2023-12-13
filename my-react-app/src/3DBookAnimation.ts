@@ -1,6 +1,6 @@
 // BookAnimation.ts
 import { Scene, MeshLambertMaterial, Color, Mesh, Object3D, PerspectiveCamera } from 'three';
-import { TradeEvent } from './FeedHandler/FeedHandler'; // Update the path as needed
+// import { TradeEvent } from './FeedHandler/FeedHandler'; // Update the path as needed
 import { SceneManager } from './Components/SceneManager';
 import { CameraManager, CameraMode } from './Components/CameraManager';
 import { PriceLevelManager } from './Components/PriceLevelManager';
@@ -25,7 +25,7 @@ export class BookAnimation {
 
     async setup() {
         const instruments = await fetchBitMEXInstruments(); 
-        this.instrumentRepository = new InstrumentRepository({ 'BitMEX': instruments }); 
+        this.instrumentRepository = new InstrumentRepository({ 'Kraken': instruments }); 
     }
     // Methods to manage the animation
 
@@ -45,9 +45,9 @@ export class BookAnimation {
     //     this.cameraManager.setCameraMode(mode);
     // }
 
-    addTrade(trade: TradeEvent): void {
-        // Logic to add a trade
-    }
+    // addTrade(trade: TradeEvent): void {
+    //     // Logic to add a trade
+    // }
 
     // Other methods as needed
 }

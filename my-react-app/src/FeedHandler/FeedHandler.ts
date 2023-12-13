@@ -1,29 +1,16 @@
-import { InstrumentRepository } from '../CombinedInstruments';
-import { orderType, OrderBook, Order} from '../OrderBook';
+import { OrderBook, Order, orderType } from '../OrderBook';
 
-export type OrderBookEventHandler = (event: OrderBookEvent) => void;
-export type TradeEventHandler = (event: TradeEvent) => void;
-
-export interface OrderBookEvent {
-    // action: OrderBookAction,
-    bids: Order[],
-    asks: Order[]
-}
-
-export interface TradeEvent {
-    price: number,
-    size: number,
-    orderType: orderType
-}
-
-export class BitMEXFeedHandler {
+export class KrakenFeedHandler {
     private webSocket: WebSocket | undefined;
-    private readonly webSocketUrl: string = 'wss://ws.bitmex.com/realtime';
+    private readonly webSocketUrl: string = 'wss://ws.kraken.com';
     private isConnected: boolean = false;
-    private orderBookEventHandlers: OrderBookEventHandler[] = [];
-    private tradeEventHandlers: TradeEventHandler[] = [];
+    private orderBook: OrderBook;
     private tradingSymbol: string = '';
-    // private instrumentRepo = new InstrumentRepository();
+
+    constructor(tradingSymbol: string) {
+        this.tradingSymbol = tradingSymbol;
+        this.orderBook = new OrderBook();
+    }
 
     private getWebSocket(): WebSocket {
         if (!this.webSocket) {
@@ -31,94 +18,95 @@ export class BitMEXFeedHandler {
         }
         return this.webSocket;
     }
-    
-    onOpen(): void {
-        this.getWebSocket().send(JSON.stringify({
-            'op': 'subscribe', 
-            'args': [`orderBookL2:${this.tradingSymbol}`, `trade:${this.tradingSymbol}`]
-        }));
+
+    onOpen(event: Event) {
+        const subscribeBook = {
+            event: 'subscribe',
+            subscription: {
+                name: 'book',
+                depth: 1000,
+            },
+            pair: [this.tradingSymbol]
+        };
+        this.getWebSocket().send(JSON.stringify(subscribeBook));
+
+        const subscribeTrades = {
+            event: 'subscribe',
+            subscription: {
+                name: 'trade',
+            },
+            pair: [this.tradingSymbol]
+        };
+        this.getWebSocket().send(JSON.stringify(subscribeTrades));
     }
 
-    onMessage(event: MessageEvent): void {
-        const data = JSON.parse(event.data);
-        if (data.table === 'orderBookL2') {
-            this.processOrderBookData(data);
-        } else if (data.table === 'trade') {
-            this.processTradeData(data);
+    onMessage(event: MessageEvent) {
+        const msg = JSON.parse(event.data as string);
+
+        if (!Array.isArray(msg)) {
+            return;
+        }
+
+        const [reqIds, data, typ, pair] = msg;
+
+        if (`${typ}`.startsWith('book-')) {
+            this.handleOrderBookEvent(data);
+        }
+        if (typ === "trade") {
+            this.handleTradeEvent(data);
         }
     }
 
-    onOrderBookEvent(handler: OrderBookEventHandler): void {
-        this.orderBookEventHandlers.push(handler);
-    }
-
-    onTradeEvent(handler: TradeEventHandler): void {
-        this.tradeEventHandlers.push(handler);
-    }
-
-    connect(symbol: string): void {
-        console.log(`Connecting to BitMEX WebSocket feed.`);
+    connect() {
+        console.log(`Connecting to Kraken WebSocket feed.`);
         this.webSocket = new WebSocket(this.webSocketUrl);
-        this.tradingSymbol = symbol;
-        this.webSocket.onopen = () => this.onOpen();
-        this.webSocket.onmessage = (e: MessageEvent) => {
-            if (!this.isConnected) return;
-            this.onMessage(e);
-        };
+        this.webSocket.onopen = this.onOpen.bind(this);
+        this.webSocket.onmessage = this.onMessage.bind(this);
         this.isConnected = true;
     }
 
-    disconnect(): void {
+    disconnect() {
         if (!this.isConnected) return;
-        console.log(`Disconnecting from BitMEX WebSocket feed.`);
+        console.log(`Disconnecting from Kraken WebSocket feed.`);
         this.getWebSocket().close();
         this.webSocket = undefined;
         this.isConnected = false;
     }
 
-    private processOrderBookData(data: any): void {
-        const processedBids: Order[] = [];
-        const processedAsks: Order[] = [];
+    handleOrderBookEvent(data: any) {
+        const isSnapshot = "as" in data || "bs" in data;
 
-        data.data.forEach((level: any) => {
-            const order: Order = {
-                price: level.price,
-                quantity: level.quantity,
-                orderType: level.orderType === 'BUY' ? orderType.BUY : orderType.SELL
-            };
-
-            if (order.orderType === orderType.BUY) {
-                processedBids.push(order);
-            } else {
-                processedAsks.push(order);
-            }
-        });
-
-        const event: OrderBookEvent = {
-            // action: data.action === 'partial' ? OrderBookAction.Partial : OrderBookAction.Update,
-            bids: processedBids,
-            asks: processedAsks
+        const processLevel = (level: any[], type: orderType) => {
+            const price = parseFloat(level[0]);
+            const quantity = parseFloat(level[1]);
+            return { price, quantity, orderType: type };
         };
 
-        this.publishOrderBookEvent(event);
-    }
+        if (isSnapshot) {
+            this.orderBook = new OrderBook(); // Reset order book for snapshot
+        }
 
-    private processTradeData(data: any): void {
-        data.data.forEach((tradeData: any) => {
-            const trade: TradeEvent = {
-                price: tradeData.price,
-                size: tradeData.size,
-                orderType: tradeData.orderType === 'BUY' ? orderType.BUY : orderType.SELL
-            };
-            this.publishTradeEvent(trade);
+        (data.b ?? data.bs ?? []).forEach((bid: any) => {
+            const order = processLevel(bid, orderType.BUY);
+            this.orderBook.addOrder(order);
         });
+
+        (data.a ?? data.as ?? []).forEach((ask: any) => {
+            const order = processLevel(ask, orderType.SELL);
+            this.orderBook.addOrder(order);
+        });
+
+        // Optionally, match orders after each update
+        this.orderBook.matchOrders();
     }
 
-    private publishOrderBookEvent(event: OrderBookEvent): void {
-        this.orderBookEventHandlers.forEach(handler => handler(event));
-    }
-
-    private publishTradeEvent(event: TradeEvent): void {
-        this.tradeEventHandlers.forEach(handler => handler(event));
+    handleTradeEvent(data: any[]) {
+        // Handle trade data
+        data.forEach(d => {
+            const tradePrice = parseFloat(d[0]);
+            const tradeSize = parseFloat(d[1]);
+            const tradeSide = d[3] === 'b' ? orderType.BUY : orderType.SELL;
+            console.log(`Trade executed: ${tradeSize} at price ${tradePrice} on side ${tradeSide}`);
+        });
     }
 }

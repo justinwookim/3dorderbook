@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PerspectiveCamera, Scene, WebGLRenderer, HemisphereLight, PointLight, Color, Fog } from 'three';
 import { BookAnimation } from './3DBookAnimation';
-import { BitMEXFeedHandler } from './FeedHandler/FeedHandler';
+import { KrakenFeedHandler } from './FeedHandler/FeedHandler';
 import { OrderBook } from './OrderBook';
 import { InstrumentRepository, fetchBitMEXInstruments } from './CombinedInstruments';
 
@@ -13,7 +13,7 @@ const ThreeScene = () => {
         const initializeInstruments = async () => {
             try {
                 const instruments = await fetchBitMEXInstruments();
-                const instrumentRepo = new InstrumentRepository({ 'BitMEX': instruments });
+                const instrumentRepo = new InstrumentRepository({ 'Kraken': instruments });
                 setInstrumentRepository(instrumentRepo);
             } catch (error) {
                 console.error('Error fetching instruments:', error);
@@ -32,19 +32,20 @@ const ThreeScene = () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            const initialInstrument = instrumentRepository.getExchangeInstrument('BitMEX', 'XBTUSD');
+            const initialInstrument = instrumentRepository.getExchangeInstrument('Kraken', '1INCH/USD');
             if (!initialInstrument) {
+                instrumentRepository.getExchangeInstruments('Kraken'); 
                 console.error('Instrument not found');
                 return;
             }
 
             const book = new OrderBook();
-            const feedManager = new BitMEXFeedHandler();
+            const feedManager = new KrakenFeedHandler('1INCH/USD');
 
             const animation = new BookAnimation(scene, camera, book, 200, 400, renderer.domElement);
             animation.create();
 
-            feedManager.connect('XBTUSD');
+            feedManager.connect();
 
             const ambientLight = new HemisphereLight(0x999999);
             scene.add(ambientLight);
