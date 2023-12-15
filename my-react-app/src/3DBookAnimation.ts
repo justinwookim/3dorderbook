@@ -1,102 +1,93 @@
-// BookAnimation.ts
-import { Scene, MeshLambertMaterial, Color, Mesh, Object3D, PerspectiveCamera } from 'three';
-// import { TradeEvent } from './FeedHandler/FeedHandler'; // Update the path as needed
+import { Scene, PerspectiveCamera, Mesh, BoxGeometry, MeshLambertMaterial, Color, Object3D, Vector3 } from 'three';
+import { OrderBook, Order } from './OrderBook';
 import { SceneManager } from './Components/SceneManager';
-import { CameraManager, CameraMode } from './Components/CameraManager';
-import { PriceLevelManager } from './Components/PriceLevelManager';
-import { Instrument, InstrumentRepository, initializeAndSaveInstruments, fetchBitMEXInstruments } from './CombinedInstruments';
-import { orderType, Order, OrderBook} from './OrderBook';
-// Import any other dependencies
+import { CameraManager } from './Components/CameraManager';
 
 export class BookAnimation {
-    public sceneManager: SceneManager;
-    public cameraManager: CameraManager;
-    public priceLevelManager: PriceLevelManager;
-    public instrumentRepository: InstrumentRepository; 
-    private depth: number;
-    private numTicks: number;
-    private ticksPerLabel = 20;
-    private labelsPerSide = 0;
-    private box: Object3D<Mesh, MeshLambertMaterial> | undefined;
-    private totalLabels = 0;
-    private writtenText: [];
-    // Other private properties and dependencies
+    private sceneManager: SceneManager;
+    private cameraManager: CameraManager;
+    private orderBook: OrderBook;
+    private scene: Scene;
+    private camera: PerspectiveCamera;
+    private meshGroups: {
+        bidMeshes: Mesh[],
+        askMeshes: Mesh[]
+    };
+    private maxDepth: number;
+    private tickSize: number;
+    private scalingFactor: number;
 
-    constructor(scene: Scene, camera: PerspectiveCamera, book: OrderBook, numTicks: number, depth: number, rendererDomElement: HTMLElement) {
+    constructor(scene: Scene, camera: PerspectiveCamera, orderBook: OrderBook, rendererDomElement: HTMLElement, maxDepth: number = 400) {
+        this.scene = scene;
+        this.camera = camera;
+        this.orderBook = orderBook;
         this.sceneManager = new SceneManager(scene);
-        this.cameraManager = new CameraManager(camera, rendererDomElement, depth);
-        this.priceLevelManager = new PriceLevelManager(depth, numTicks);
-        this.depth = depth;
-        this.numTicks = numTicks;
-        this.setup();  
-        // Initialize other properties
+        this.cameraManager = new CameraManager(camera, rendererDomElement, maxDepth);
+        this.meshGroups = { bidMeshes: [], askMeshes: [] };
+        this.maxDepth = maxDepth;
+        this.tickSize = 1; // Initial tick size, update dynamically as needed
+        this.scalingFactor = 1; // Update this based on your data
     }
 
-    async setup() {
-        const instruments = await fetchBitMEXInstruments(); 
-        this.instrumentRepository = new InstrumentRepository({ 'Kraken': instruments }); 
-    }
-    // Methods to manage the animation
-
-    // create(): void {
-    //     // Logic to create the animation
-    // }
-
-    // Create functionality:
-    create(): void {
-        this.createBox();
-        this.createLabels();
-        // this.reset();
-    }
-    
-    createBox() {
-        const boxGeometry = new Mesh(this.depth, 1, 1);
-        const boxMaterial = new MeshLambertMaterial({ color: 0xffffff });
-        this.box = new Object3D(boxGeometry, boxMaterial, 2 * this.numTicks * this.depth);
-        this.sceneManager.addElement(this.box);
-        this.setColor(Color(0xF0D0C9));
-    }
-
-    
-    createLabels() {
-        this.labelsPerSide = Math.floor(this.numTicks / this.ticksPerLabel);
-        this.totalLabels = 1 + 2 * this.labelsPerSide;
-    
-        // Add text to the label
-    }
-      
-    setColor(color: Color) {
-        for (let i = 0; i < 2 * this.depth * this.numTicks; i++) {
-            this.box.setColorAt(i, Color);
+    create() {
+        try {
+            console.log('Creating BookAnimation');
+            this.recalculate();
+            this.draw();
+        } catch (error) {
+            console.error('Error in creating BookAnimation:', error);
         }
     }
 
-    destroy(): void {
-        // Logic to clean up and destroy the animation
+    update() {
+        try {
+            this.resetMeshes();
+            this.recalculate();
+            this.draw();
+        } catch (error) {
+            console.error('Error in updating BookAnimation:', error);
+        }
     }
 
-    reset(): void{
-        // Logic to reset the animation
+    destroy() {
+        this.resetMeshes();
     }
 
-    update(): void {
-        // Logic to update the animation each frame or on data change
+    setTickSize(newTickSize: number) {
+        this.tickSize = newTickSize;
+        this.recalculate();
     }
 
-    // setCameraMode(mode: CameraMode): void {
-    //     this.cameraManager.setCameraMode(mode);
-    // }
+    private resetMeshes() {
+        Object.values(this.meshGroups).forEach(group => {
+            group.forEach(mesh => this.sceneManager.disposeElement(mesh));
+            group.length = 0;
+        });
+    }
 
-    // addTrade(trade: TradeEvent): void {
-    //     // Logic to add a trade
-    // }
+    private recalculate() {
+        // Logic to update your scaling factor, price history, size, and side matrices
+        // This should be based on the current state of your order book
+    }
 
-    // Other methods as needed
+    private draw() {
+        console.log("DRAW", this.orderBook); 
+        this.createMeshesForOrders(this.orderBook.getBuyOrders(), this.meshGroups.bidMeshes, new Color(0x00ff00));
+        this.createMeshesForOrders(this.orderBook.getSellOrders(), this.meshGroups.askMeshes, new Color(0xff0000));
+    }
+
+    private createMeshesForOrders(orders: Order[], meshGroup: Mesh[], color: Color) {
+        orders.forEach((order, index) => {
+            const mesh = this.createOrderMesh(order, color);
+            mesh.position.set(0, index, 0); // Adjust positioning as needed
+            this.sceneManager.addElement(mesh);
+            meshGroup.push(mesh);
+        });
+    }
+
+    private createOrderMesh(order: Order, color: Color): Mesh {
+        const geometry = new BoxGeometry(this.tickSize, order.quantity * this.scalingFactor, this.tickSize);
+        const material = new MeshLambertMaterial({ color: color });
+        return new Mesh(geometry, material);
+    }
 }
-
-// Usage example (in a React component):
-// useEffect(() => {
-//   const animation = new BookAnimation(scene, camera, book, numTicks, depth);
-//   animation.create();
-//   return () => animation.destroy();
-// }, []);

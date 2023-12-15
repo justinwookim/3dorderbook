@@ -1,4 +1,5 @@
 import { OrderBook, Order, orderType } from '../OrderBook';
+import { BookAnimation } from '../3DBookAnimation';
 
 export class KrakenFeedHandler {
     private webSocket: WebSocket | undefined;
@@ -6,10 +7,17 @@ export class KrakenFeedHandler {
     private isConnected: boolean = false;
     private orderBook: OrderBook;
     private tradingSymbol: string = '';
+    private bookAnimation: BookAnimation | null = null;
+    private updateOrderBookState: (updatedOrderBook: OrderBook) => void;
 
-    constructor(tradingSymbol: string) {
+    constructor(tradingSymbol: string, orderBook: OrderBook, updateOrderBookState: (updatedOrderBook: OrderBook) => void) {
         this.tradingSymbol = tradingSymbol;
-        this.orderBook = new OrderBook();
+        this.orderBook = orderBook;
+        this.updateOrderBookState = updateOrderBookState;
+    }
+
+    setBookAnimation(animation: BookAnimation) {
+        this.bookAnimation = animation;
     }
 
     private getWebSocket(): WebSocket {
@@ -20,24 +28,18 @@ export class KrakenFeedHandler {
     }
 
     onOpen(event: Event) {
-        const subscribeBook = {
+        console.log('WebSocket connection established.');
+        
+        // Subscribe to the order book and trades for the specified trading symbol
+        const subscribeMessage = {
             event: 'subscribe',
+            pair: [this.tradingSymbol],
             subscription: {
                 name: 'book',
                 depth: 1000,
             },
-            pair: [this.tradingSymbol]
         };
-        this.getWebSocket().send(JSON.stringify(subscribeBook));
-
-        const subscribeTrades = {
-            event: 'subscribe',
-            subscription: {
-                name: 'trade',
-            },
-            pair: [this.tradingSymbol]
-        };
-        this.getWebSocket().send(JSON.stringify(subscribeTrades));
+        this.getWebSocket().send(JSON.stringify(subscribeMessage));
     }
 
     onMessage(event: MessageEvent) {
@@ -47,18 +49,17 @@ export class KrakenFeedHandler {
             return;
         }
 
-        const [reqIds, data, typ, pair] = msg;
+        const [channelID, data, channelName, pair] = msg;
 
-        if (`${typ}`.startsWith('book-')) {
+        if (channelName.startsWith('book-')) {
             this.handleOrderBookEvent(data);
-        }
-        if (typ === "trade") {
+        } else if (channelName === 'trade') {
             this.handleTradeEvent(data);
         }
     }
 
     connect() {
-        console.log(`Connecting to Kraken WebSocket feed.`);
+        console.log(`Connecting to Kraken WebSocket feed for ${this.tradingSymbol}.`);
         this.webSocket = new WebSocket(this.webSocketUrl);
         this.webSocket.onopen = this.onOpen.bind(this);
         this.webSocket.onmessage = this.onMessage.bind(this);
@@ -67,7 +68,8 @@ export class KrakenFeedHandler {
 
     disconnect() {
         if (!this.isConnected) return;
-        console.log(`Disconnecting from Kraken WebSocket feed.`);
+
+        console.log('Disconnecting from Kraken WebSocket feed.');
         this.getWebSocket().close();
         this.webSocket = undefined;
         this.isConnected = false;
@@ -75,38 +77,49 @@ export class KrakenFeedHandler {
 
     handleOrderBookEvent(data: any) {
         const isSnapshot = "as" in data || "bs" in data;
-
         const processLevel = (level: any[], type: orderType) => {
             const price = parseFloat(level[0]);
             const quantity = parseFloat(level[1]);
             return { price, quantity, orderType: type };
         };
-
+    
         if (isSnapshot) {
-            this.orderBook = new OrderBook(); // Reset order book for snapshot
+            // Clear existing orders for snapshot
+            this.orderBook.clearOrders();
         }
-
+    
         (data.b ?? data.bs ?? []).forEach((bid: any) => {
             const order = processLevel(bid, orderType.BUY);
             this.orderBook.addOrder(order);
         });
-
+    
         (data.a ?? data.as ?? []).forEach((ask: any) => {
             const order = processLevel(ask, orderType.SELL);
             this.orderBook.addOrder(order);
         });
-
-        // Optionally, match orders after each update
+    
         this.orderBook.matchOrders();
+    
+        // Trigger an update in the BookAnimation instance
+        if (this.bookAnimation) {
+            this.bookAnimation.update();
+        }
+    }
+    
+    processOrderBookData(data: any, key: 'b' | 'a', type: orderType) {
+        const orders = data[key] ?? [];
+        orders.forEach((level: any[]) => {
+            const price = parseFloat(level[0]);
+            const quantity = parseFloat(level[1]);
+            const order = { price, quantity, orderType: type };
+            this.orderBook.addOrder(order);
+        });
     }
 
     handleTradeEvent(data: any[]) {
-        // Handle trade data
-        data.forEach(d => {
-            const tradePrice = parseFloat(d[0]);
-            const tradeSize = parseFloat(d[1]);
-            const tradeSide = d[3] === 'b' ? orderType.BUY : orderType.SELL;
-            console.log(`Trade executed: ${tradeSize} at price ${tradePrice} on side ${tradeSide}`);
+        data.forEach(trade => {
+            const [price, volume, time, side, orderType, misc] = trade;
+            console.log(`Trade executed: ${volume} at price ${price} on side ${side}`);
         });
     }
 }

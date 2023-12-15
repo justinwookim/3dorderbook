@@ -71,5 +71,12 @@ export class OrderBook {
     private sortOrders(orders: Order[], orderType: 'BUY' | 'SELL') {
         orders.sort((a, b) => orderType === 'BUY' ? b.price - a.price : a.price - b.price);
     }
+
+    // Add this method to the OrderBook class
+    clearOrders() {
+        this.buyOrders = [];
+        this.sellOrders = [];
+    }
+
 }
 

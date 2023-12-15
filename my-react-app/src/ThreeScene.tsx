@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PerspectiveCamera, Scene, WebGLRenderer, HemisphereLight, PointLight, Color, Fog } from 'three';
 import { BookAnimation } from './3DBookAnimation';
 import { KrakenFeedHandler } from './FeedHandler/FeedHandler';
@@ -7,9 +7,13 @@ import { InstrumentRepository, fetchBitMEXInstruments } from './CombinedInstrume
 
 const ThreeScene = () => {
     const [instrumentRepository, setInstrumentRepository] = useState<InstrumentRepository | null>(null);
+    const [orderBook, setOrderBook] = useState(new OrderBook());
+
+    const updateOrderBook = useCallback((updatedOrderBook: OrderBook) => {
+        setOrderBook(updatedOrderBook);
+    }, []);
 
     useEffect(() => {
-        // Asynchronously fetch instruments and initialize the InstrumentRepository
         const initializeInstruments = async () => {
             try {
                 const instruments = await fetchBitMEXInstruments();
@@ -19,32 +23,22 @@ const ThreeScene = () => {
                 console.error('Error fetching instruments:', error);
             }
         };
-
         initializeInstruments();
     }, []);
 
     useEffect(() => {
         if (instrumentRepository) {
-            // Initialize Three.js components only after instrumentRepository is set
             const scene = new Scene();
             const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             const renderer = new WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            const initialInstrument = instrumentRepository.getExchangeInstrument('Kraken', '1INCH/USD');
-            if (!initialInstrument) {
-                instrumentRepository.getExchangeInstruments('Kraken'); 
-                console.error('Instrument not found');
-                return;
-            }
-
-            const book = new OrderBook();
-            const feedManager = new KrakenFeedHandler('1INCH/USD');
-
-            const animation = new BookAnimation(scene, camera, book, 200, 400, renderer.domElement);
+            const animation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 10);
             animation.create();
 
+            const feedManager = new KrakenFeedHandler('ETH/USDT', orderBook, updateOrderBook);
+            feedManager.setBookAnimation(animation);
             feedManager.connect();
 
             const ambientLight = new HemisphereLight(0x999999);
@@ -72,13 +66,13 @@ const ThreeScene = () => {
             animate();
 
             return () => {
-                // Cleanup
                 window.removeEventListener('resize', onWindowResize);
                 document.body.removeChild(renderer.domElement);
                 animation.destroy();
+                feedManager.disconnect();
             };
         }
-    }, [instrumentRepository]);
+    }, [instrumentRepository, updateOrderBook, orderBook]);
 
     return <div id="gui"></div>;
 };
