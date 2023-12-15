@@ -50,12 +50,13 @@ export class KrakenFeedHandler {
         }
 
         const [channelID, data, channelName, pair] = msg;
-
-        if (channelName.startsWith('book-')) {
-            this.handleOrderBookEvent(data);
-        } else if (channelName === 'trade') {
-            this.handleTradeEvent(data);
-        }
+        try{
+            if (channelName.startsWith('book-')) {
+                this.handleOrderBookEvent(data);
+            } else if (channelName === 'trade') {
+                this.handleTradeEvent(data);
+            }
+        } catch(e) {}
     }
 
     connect() {

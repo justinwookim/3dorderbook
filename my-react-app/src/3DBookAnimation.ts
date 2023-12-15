@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, Mesh, BoxGeometry, MeshLambertMaterial, Color, Object3D, Vector3 } from 'three';
+import { Scene, PerspectiveCamera, Mesh, BoxGeometry, MeshLambertMaterial, Color, Object3D, BufferGeometry, AxesHelper, MeshBasicMaterial, InstancedMesh } from 'three';
 import { OrderBook, Order } from './OrderBook';
 import { SceneManager } from './Components/SceneManager';
 import { CameraManager } from './Components/CameraManager';
@@ -32,6 +32,17 @@ export class BookAnimation {
     create() {
         try {
             console.log('Creating BookAnimation');
+            // this.scene.add(new AxesHelper(5)); 
+            this.camera.position.z = 5; 
+            
+            var geometry = new BoxGeometry();
+            var material1 = new MeshLambertMaterial();
+
+            var iMesh1 = new InstancedMesh(geometry, material1, 30);
+            this.scene.add(iMesh1); 
+
+
+
             this.recalculate();
             this.draw();
         } catch (error) {
@@ -72,8 +83,8 @@ export class BookAnimation {
 
     private draw() {
         console.log("DRAW", this.orderBook); 
-        this.createMeshesForOrders(this.orderBook.getBuyOrders(), this.meshGroups.bidMeshes, new Color(0x00ff00));
-        this.createMeshesForOrders(this.orderBook.getSellOrders(), this.meshGroups.askMeshes, new Color(0xff0000));
+        // this.createMeshesForOrders(this.orderBook.getBuyOrders(), this.meshGroups.bidMeshes, new Color(0x00ff00));
+        // this.createMeshesForOrders(this.orderBook.getSellOrders(), this.meshGroups.askMeshes, new Color(0xff0000));
     }
 
     private createMeshesForOrders(orders: Order[], meshGroup: Mesh[], color: Color) {
