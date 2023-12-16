@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, Mesh, BufferAttribute, BoxGeometry, MeshLambertMaterial, Color, Object3D, BufferGeometry, AxesHelper, MeshBasicMaterial, InstancedMesh } from 'three';
+import { Scene, PerspectiveCamera, Mesh, BufferAttribute, BoxGeometry, MeshLambertMaterial,  Color, Object3D, BufferGeometry, AxesHelper, MeshBasicMaterial, InstancedMesh } from 'three';
 import { OrderBook, Order, orderType } from './OrderBook';
 import { SceneManager } from './Components/SceneManager';
 import { CameraManager } from './Components/CameraManager';
@@ -11,10 +11,6 @@ export class BookAnimation {
     private orderBook: OrderBook;
     private scene: Scene;
     private camera: PerspectiveCamera;
-    private meshGroups: {
-        bidMeshes: Mesh[],
-        askMeshes: Mesh[]
-    };
     private maxDepth: number;
     private numTicks: number; 
     private tickSize: number;
@@ -35,8 +31,7 @@ export class BookAnimation {
         this.orderBook = orderBook;
         this.sceneManager = new SceneManager(scene);
         this.cameraManager = new CameraManager(camera, rendererDomElement, maxDepth);
-        this.meshGroups = { bidMeshes: [], askMeshes: [] };
-        this.maxDepth = maxDepth; 
+        this.maxDepth = maxDepth;
         this.numTicks = 100; 
         this.tickSize = 1; // Initial tick size, update dynamically as needed
         this.precision = 1; // Initial precision, update dynamically as needed
@@ -51,9 +46,8 @@ export class BookAnimation {
     create() {
         try {
             console.log('Creating BookAnimation');
-            // this.scene.add(new AxesHelper(5));
-            this.camera.position.y = 2; 
-            this.camera.position.z = 5; 
+            this.camera.position.y = 20; 
+            this.camera.position.z = 100; 
 
             const box = this.createBoxGeometry(1, 1, 1)
             const mat = new MeshLambertMaterial({ color: 0xffffff }); 
@@ -79,7 +73,6 @@ export class BookAnimation {
 
     update() {
         try {
-            this.resetMeshes();
             this.recalculate();
             this.draw();
         } catch (error) {
@@ -87,21 +80,10 @@ export class BookAnimation {
         }
     }
 
-    destroy() {
-        this.resetMeshes();
-    }
-
     setTickSize(newTickSize: number) {
         this.tickSize = newTickSize;
         this.precision = getPrecision(newTickSize); 
         this.recalculate();
-    }
-
-    private resetMeshes() {
-        Object.values(this.meshGroups).forEach(group => {
-            group.forEach(mesh => this.sceneManager.disposeElement(mesh));
-            group.length = 0;
-        });
     }
 
     private recalculate() {
@@ -130,11 +112,6 @@ export class BookAnimation {
         }
         
         if (this.priceFlag) {
-            // const allSizes = [...bids.map((order: Order) => order.quantity), ...asks.map((order: Order) => order.quantity)].filter((x: number) => x > 0); 
-            // if (allSizes.length > 0) {
-            //     const avgSize = allSizes.reduce((a, b) => a + b, 0) / allSizes.length; 
-            //     this.scalingFactor = 1 / avgSize; 
-            // }
             this.priceHistory = Array(this.maxDepth).fill(midPrice); 
             this.priceFlag = false; 
         }
@@ -165,11 +142,9 @@ export class BookAnimation {
         this.sizeMatrix.unshift(sizeSlice); 
         this.orderMatrix.unshift(orderSlice); 
         if (this.sizeMatrix.length > this.maxDepth) {
-            // console.log("POP");
             this.sizeMatrix.pop(); 
         }
         if (this.orderMatrix.length > this.maxDepth) {
-            // console.log("POPPER");
             this.orderMatrix.pop(); 
         }
     }
@@ -248,21 +223,4 @@ export class BookAnimation {
     
         return geometry;
     }
-    
-
-    // private createMeshesForOrders(orders: Order[], meshGroup: Mesh[], color: Color) {
-    //     orders.forEach((order, index) => {
-    //         const mesh = this.createOrderMesh(order, color);
-    //         mesh.position.set(0, index, 0); // Adjust positioning as needed
-    //         this.sceneManager.addElement(mesh);
-    //         meshGroup.push(mesh);
-    //     });
-    // }
-
-    // private createOrderMesh(order: Order, color: Color): Mesh {
-    //     const geometry = new BoxGeometry(this.tickSize, order.quantity * this.scalingFactor, this.tickSize);
-    //     const material = new MeshLambertMaterial({ color: color });
-    //     return new Mesh(geometry, material);
-    // }
 }
-

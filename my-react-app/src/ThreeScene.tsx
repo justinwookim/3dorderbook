@@ -73,7 +73,7 @@ const ThreeScene = () => {
             return () => {
                 window.removeEventListener('resize', onWindowResize);
                 document.body.removeChild(renderer.domElement);
-                animation.destroy();
+                // animation.destroy();
                 feedManager.disconnect();
             };
         }
