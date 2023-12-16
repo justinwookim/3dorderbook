@@ -28,7 +28,7 @@ export class BookAnimation {
     private priceHistory: number[]; 
     private priceFlag: boolean; 
 
-    constructor(scene: Scene, camera: PerspectiveCamera, orderBook: OrderBook, rendererDomElement: HTMLElement, maxDepth: number = 40) {
+    constructor(scene: Scene, camera: PerspectiveCamera, orderBook: OrderBook, rendererDomElement: HTMLElement, maxDepth: number = 400) {
         this.scene = scene;
         this.camera = camera;
         this.orderBook = orderBook;
@@ -36,10 +36,10 @@ export class BookAnimation {
         this.cameraManager = new CameraManager(camera, rendererDomElement, maxDepth);
         this.meshGroups = { bidMeshes: [], askMeshes: [] };
         this.maxDepth = maxDepth;
-        this.numTicks = 20; 
+        this.numTicks = 200; 
         this.tickSize = 1; // Initial tick size, update dynamically as needed
         this.precision = 1; // Initial precision, update dynamically as needed
-        this.scalingFactor = 1; // Update this based on your data
+        this.scalingFactor = 1/10; // Update this based on your data
         this.sizeMatrix = []; 
         this.orderMatrix = []; 
         this.priceHistory = []; 

@@ -36,7 +36,10 @@ const ThreeScene = () => {
 
             const animation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 10);
             const tickSize = instrumentRepository.getExchangeInstrument('Kraken', 'ETH/USDT')?.tickSize; 
-            console.log("TICKSIZE", tickSize); 
+            // console.log("TICKSIZE", tickSize); 
+            if (tickSize) {
+                animation.setTickSize(tickSize); 
+            }
             animation.create();
 
             const feedManager = new KrakenFeedHandler('ETH/USDT', orderBook, updateOrderBook);
