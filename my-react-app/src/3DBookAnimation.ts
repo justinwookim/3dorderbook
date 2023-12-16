@@ -27,7 +27,7 @@ export class BookAnimation {
     private orderMatrix: orderType[][]; 
     private priceHistory: number[]; 
     private priceFlag: boolean; 
-    private createdFlag: boolean; 
+    private textArray: SpriteText[]; 
 
     constructor(scene: Scene, camera: PerspectiveCamera, orderBook: OrderBook, rendererDomElement: HTMLElement, maxDepth: number = 400) {
         this.scene = scene;
@@ -45,24 +45,16 @@ export class BookAnimation {
         this.orderMatrix = []; 
         this.priceHistory = []; 
         this.priceFlag = true; 
+        this.textArray = []; 
     }
 
     create() {
         try {
             console.log('Creating BookAnimation');
             this.scene.add(new AxesHelper(5));
-            // this.camera.position.x = 0; 
             this.camera.position.y = 2; 
             this.camera.position.z = 5; 
-            // this.camera.position.z = (this.maxDepth) / 14; 
-            
-            // var geometry = new BoxGeometry();
-            // var material1 = new MeshLambertMaterial();
 
-            // var iMesh1 = new InstancedMesh(geometry, material1, 30);
-            // this.scene.add(iMesh1); 
-
-            // const box = new BoxGeometry(1, 1, 1); 
             const box = this.createBoxGeometry(1, 1, 1)
             const mat = new MeshLambertMaterial({ color: 0xffffff }); 
             this.sizeBox = new InstancedMesh(box, mat, 2 * this.numTicks * this.maxDepth);
@@ -70,13 +62,14 @@ export class BookAnimation {
 
             this.numLabelsPerSide = Math.floor(this.numTicks / 10); 
             this.numLabels = 1 + 2 * this.numLabelsPerSide; 
-            // for (let i = 0; i < this.numLabels; i++) {
-            //     const txt = new SpriteText('', 2, '#ffffff'); 
-            //     txt.position.z = 3; 
-            //     txt.position.y = 1;
-            //     txt.position.x = (i - this.numLabelsPerSide) * 10; 
-            //     this.sceneManager.addElement(txt); 
-            // }
+            for (let i = 0; i < this.numLabels; i++) {
+                const txt = new SpriteText('', 2, '#ffffff'); 
+                txt.position.z = 3; 
+                txt.position.y = 1;
+                txt.position.x = (i - this.numLabelsPerSide) * 10; 
+                this.sceneManager.addElement(txt); 
+                this.textArray.push(txt); 
+            }
             this.recalculate();
             this.draw();
         } catch (error) {
@@ -241,7 +234,7 @@ export class BookAnimation {
         geometry.setIndex(indices);
         geometry.setAttribute('position', new BufferAttribute(vertices, 3));
         
-        geometry.computeVertexNormals(); // This is important for lighting / material
+        geometry.computeVertexNormals(); 
     
         return geometry;
     }
