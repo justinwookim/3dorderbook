@@ -29,15 +29,15 @@ export class BookAnimation {
     private priceFlag: boolean; 
     private textArray: SpriteText[]; 
 
-    constructor(scene: Scene, camera: PerspectiveCamera, orderBook: OrderBook, rendererDomElement: HTMLElement, maxDepth: number = 400) {
+    constructor(scene: Scene, camera: PerspectiveCamera, orderBook: OrderBook, rendererDomElement: HTMLElement, maxDepth: number = 100) {
         this.scene = scene;
         this.camera = camera;
         this.orderBook = orderBook;
         this.sceneManager = new SceneManager(scene);
         this.cameraManager = new CameraManager(camera, rendererDomElement, maxDepth);
         this.meshGroups = { bidMeshes: [], askMeshes: [] };
-        this.maxDepth = maxDepth;
-        this.numTicks = 200; 
+        this.maxDepth = maxDepth; 
+        this.numTicks = 100; 
         this.tickSize = 1; // Initial tick size, update dynamically as needed
         this.precision = 1; // Initial precision, update dynamically as needed
         this.scalingFactor = 1/10; // Update this based on your data
@@ -130,6 +130,11 @@ export class BookAnimation {
         }
         
         if (this.priceFlag) {
+            // const allSizes = [...bids.map((order: Order) => order.quantity), ...asks.map((order: Order) => order.quantity)].filter((x: number) => x > 0); 
+            // if (allSizes.length > 0) {
+            //     const avgSize = allSizes.reduce((a, b) => a + b, 0) / allSizes.length; 
+            //     this.scalingFactor = 1 / avgSize; 
+            // }
             this.priceHistory = Array(this.maxDepth).fill(midPrice); 
             this.priceFlag = false; 
         }

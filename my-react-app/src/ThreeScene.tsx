@@ -34,7 +34,7 @@ const ThreeScene = () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            const animation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 10);
+            const animation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 100);
             const tickSize = instrumentRepository.getExchangeInstrument('Kraken', 'ETH/USDT')?.tickSize; 
             // console.log("TICKSIZE", tickSize); 
             if (tickSize) {
