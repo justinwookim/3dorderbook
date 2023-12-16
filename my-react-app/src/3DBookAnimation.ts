@@ -51,7 +51,7 @@ export class BookAnimation {
     create() {
         try {
             console.log('Creating BookAnimation');
-            this.scene.add(new AxesHelper(5));
+            // this.scene.add(new AxesHelper(5));
             this.camera.position.y = 2; 
             this.camera.position.z = 5; 
 
@@ -200,6 +200,11 @@ export class BookAnimation {
         this.sizeBox!.instanceMatrix.needsUpdate = true; 
         if (this.sizeBox!.instanceColor !== null) {
             this.sizeBox!.instanceColor.needsUpdate = true; 
+        }
+
+        for (let i = 0; i < this.numLabels; i++) {
+            const price = midPrice + ((i - this.numLabelsPerSide) * 10 * this.tickSize); 
+            this.textArray[i].text = price.toLocaleString(undefined, { minimumFractionDigits: this.precision }); 
         }
     }
 
