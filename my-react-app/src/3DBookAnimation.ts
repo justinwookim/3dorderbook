@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, Mesh, BoxGeometry, MeshLambertMaterial, Color, Object3D, BufferGeometry, AxesHelper, MeshBasicMaterial, InstancedMesh } from 'three';
+import { Scene, PerspectiveCamera, Mesh, BufferAttribute, BoxGeometry, MeshLambertMaterial, Color, Object3D, BufferGeometry, AxesHelper, MeshBasicMaterial, InstancedMesh } from 'three';
 import { OrderBook, Order, orderType } from './OrderBook';
 import { SceneManager } from './Components/SceneManager';
 import { CameraManager } from './Components/CameraManager';
@@ -27,6 +27,7 @@ export class BookAnimation {
     private orderMatrix: orderType[][]; 
     private priceHistory: number[]; 
     private priceFlag: boolean; 
+    private createdFlag: boolean; 
 
     constructor(scene: Scene, camera: PerspectiveCamera, orderBook: OrderBook, rendererDomElement: HTMLElement, maxDepth: number = 400) {
         this.scene = scene;
@@ -61,7 +62,8 @@ export class BookAnimation {
             // var iMesh1 = new InstancedMesh(geometry, material1, 30);
             // this.scene.add(iMesh1); 
 
-            const box = new BoxGeometry(1, 1, 1); 
+            // const box = new BoxGeometry(1, 1, 1); 
+            const box = this.createBoxGeometry(1, 1, 1)
             const mat = new MeshLambertMaterial({ color: 0xffffff }); 
             this.sizeBox = new InstancedMesh(box, mat, 2 * this.numTicks * this.maxDepth);
             this.sceneManager.addElement(this.sizeBox); 
@@ -76,7 +78,7 @@ export class BookAnimation {
             //     this.sceneManager.addElement(txt); 
             // }
             this.recalculate();
-            // this.draw();
+            this.draw();
         } catch (error) {
             console.error('Error in creating BookAnimation:', error);
         }
@@ -112,7 +114,6 @@ export class BookAnimation {
     private recalculate() {
         // Logic to update your scaling factor, price history, size, and side matrices
         // This should be based on the current state of your order book
-
         for (let i = 0; i < this.maxDepth; i++) {
             this.sizeMatrix.push(Array(2 * this.numTicks).fill(0)); 
             this.orderMatrix.push(Array(2 * this.numTicks).fill(orderType.BUY)); 
@@ -166,16 +167,16 @@ export class BookAnimation {
         this.sizeMatrix.unshift(sizeSlice); 
         this.orderMatrix.unshift(orderSlice); 
         if (this.sizeMatrix.length > this.maxDepth) {
+            // console.log("POP");
             this.sizeMatrix.pop(); 
         }
         if (this.orderMatrix.length > this.maxDepth) {
+            // console.log("POPPER");
             this.orderMatrix.pop(); 
         }
     }
 
     private draw() {
-        // this.createMeshesForOrders(this.orderBook.getBuyOrders(), this.meshGroups.bidMeshes, new Color(0x00ff00));
-        // this.createMeshesForOrders(this.orderBook.getSellOrders(), this.meshGroups.askMeshes, new Color(0xff0000));
         const midPrice = this.priceHistory[0]; 
 
         const dummy = new Object3D(); 
@@ -209,19 +210,56 @@ export class BookAnimation {
         }
     }
 
-    private createMeshesForOrders(orders: Order[], meshGroup: Mesh[], color: Color) {
-        orders.forEach((order, index) => {
-            const mesh = this.createOrderMesh(order, color);
-            mesh.position.set(0, index, 0); // Adjust positioning as needed
-            this.sceneManager.addElement(mesh);
-            meshGroup.push(mesh);
-        });
+    private createBoxGeometry(width: number, height: number, depth: number) {
+        const geometry = new BufferGeometry();
+    
+        // Define vertices for one face of the box
+        const vertices = new Float32Array([
+            // Front face
+            -width / 2, -height / 2,  depth / 2,
+             width / 2, -height / 2,  depth / 2,
+             width / 2,  height / 2,  depth / 2,
+            -width / 2,  height / 2,  depth / 2,
+            
+            // Back face
+            -width / 2, -height / 2, -depth / 2,
+             width / 2, -height / 2, -depth / 2,
+             width / 2,  height / 2, -depth / 2,
+            -width / 2,  height / 2, -depth / 2,
+        ]);
+    
+        // Define the indices for the triangles
+        const indices = [
+            0, 1, 2,      2, 3, 0,    // front
+            1, 5, 6,      6, 2, 1,    // right
+            5, 4, 7,      7, 6, 5,    // back
+            4, 0, 3,      3, 7, 4,    // left
+            3, 2, 6,      6, 7, 3,    // top
+            4, 5, 1,      1, 0, 4     // bottom
+        ];
+    
+        geometry.setIndex(indices);
+        geometry.setAttribute('position', new BufferAttribute(vertices, 3));
+        
+        geometry.computeVertexNormals(); // This is important for lighting / material
+    
+        return geometry;
     }
+    
 
-    private createOrderMesh(order: Order, color: Color): Mesh {
-        const geometry = new BoxGeometry(this.tickSize, order.quantity * this.scalingFactor, this.tickSize);
-        const material = new MeshLambertMaterial({ color: color });
-        return new Mesh(geometry, material);
-    }
+    // private createMeshesForOrders(orders: Order[], meshGroup: Mesh[], color: Color) {
+    //     orders.forEach((order, index) => {
+    //         const mesh = this.createOrderMesh(order, color);
+    //         mesh.position.set(0, index, 0); // Adjust positioning as needed
+    //         this.sceneManager.addElement(mesh);
+    //         meshGroup.push(mesh);
+    //     });
+    // }
+
+    // private createOrderMesh(order: Order, color: Color): Mesh {
+    //     const geometry = new BoxGeometry(this.tickSize, order.quantity * this.scalingFactor, this.tickSize);
+    //     const material = new MeshLambertMaterial({ color: color });
+    //     return new Mesh(geometry, material);
+    // }
 }
 
