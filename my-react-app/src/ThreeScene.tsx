@@ -4,7 +4,7 @@ import { BookAnimation } from './3DBookAnimation';
 import { KrakenFeedHandler } from './FeedHandler/FeedHandler';
 import { OrderBook } from './OrderBook';
 import { InstrumentRepository, fetchBitMEXInstruments } from './CombinedInstruments';
-
+import './style.css'; 
 const ThreeScene = () => {
     const [instrumentRepository, setInstrumentRepository] = useState<InstrumentRepository | null>(null);
     const [orderBook, setOrderBook] = useState(new OrderBook());
@@ -81,11 +81,14 @@ const ThreeScene = () => {
 
     return (
         <div id="gui">
-            <select onChange={handleInstrumentChange} value={selectedInstrument}>
-                {instrumentRepository && instrumentRepository.getExchangeInstruments('Kraken').map((instrument, index) => (
-                    <option key={index} value={instrument.symbol}>{instrument.symbol}</option>
-                ))}
-            </select>
+            <h1>IE 421 Group 3 Project</h1>
+            <div className="select">
+                <select onChange={handleInstrumentChange} value={selectedInstrument}>
+                    {instrumentRepository && instrumentRepository.getExchangeInstruments('Kraken').map((instrument, index) => (
+                        <option key={index} value={instrument.symbol}>{instrument.symbol}</option>
+                    ))}
+                </select>
+            </div>
         </div>
     );
 };
