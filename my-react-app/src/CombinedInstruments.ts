@@ -53,18 +53,3 @@ export async function fetchBitMEXInstruments(): Promise<Instrument[]> {
   //   tickSize: x.tickSize,
   // }));
 }
-
-// Optionally, define a function to initialize the InstrumentRepository
-// with fetched data and save to a file
-export async function initializeAndSaveInstruments() {
-  const instruments = await fetchBitMEXInstruments();
-  const instrumentData = { 'Kraken': instruments };
-  const instrumentRepo = new InstrumentRepository(instrumentData);
-  console.log("TESTING"); 
-  console.log(instrumentRepo.getExchangeInstruments('Kraken')); 
-  
-  // fs.writeFileSync('src/instruments.json', JSON.stringify(instrumentData, null, 2));
-  return instrumentRepo;
-}
-
-// You can now use this file in your React project to manage and fetch instruments.

@@ -52,6 +52,7 @@ export class OrderBook {
             if (buyOrder.quantity === 0) this.buyOrders.shift();
             if (sellOrder.quantity === 0) this.sellOrders.shift();
 
+            // See when a trade happens 
             // console.log(`Trade executed: ${tradeQuantity} at price ${buyOrder.price}`);
         }
     }

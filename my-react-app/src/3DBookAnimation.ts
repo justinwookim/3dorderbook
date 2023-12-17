@@ -113,7 +113,7 @@ export class BookAnimation {
         }
         
         let TotalBid = 0; 
-        let TotAsk = 0; 
+        let TotalAsk = 0; 
         const SizeSection = []; 
         const OrderSection = []; 
 
@@ -123,10 +123,10 @@ export class BookAnimation {
             const bid = precisionRound(middlepriceval - (i * this.tickSize), this.precision); 
             const ask = precisionRound(middlepriceval + ((1 + i) * this.tickSize), this.precision); 
             TotalBid += bidsPriceToQuantity.get(bid) || 0; 
-            TotAsk += asksPriceToQuantity.get(ask) || 0; 
+            TotalAsk += asksPriceToQuantity.get(ask) || 0; 
             SizeSection[(this.numTicks - 1) - i] = this.scalingFactor * TotalBid; 
             OrderSection[(this.numTicks - 1) - i] = orderType.BUY; 
-            SizeSection[this.numTicks + i] = this.scalingFactor * TotAsk; 
+            SizeSection[this.numTicks + i] = this.scalingFactor * TotalAsk; 
             OrderSection[this.numTicks + i] = orderType.SELL; 
         }
 
@@ -156,7 +156,7 @@ export class BookAnimation {
                 const currentSize = this.sizeMatrix[depthIndex][tickIndex];
                 const currentOrderType = this.orderMatrix[depthIndex][tickIndex];
 
-                tempObject3D.scale.y = currentSize === 0 ? 0.0001 : currentSize;
+                tempObject3D.scale.y = (currentSize === 0) ? 0.0001 : currentSize;
                 tempObject3D.position.y = tempObject3D.scale.y / 2;
                 tempObject3D.updateMatrix();
 
@@ -164,7 +164,7 @@ export class BookAnimation {
                     this.sizeBox.setMatrixAt(meshIndex, tempObject3D.matrix);
                     const bidColor = new Color(0x0abc41);
                     const askColor = new Color(0xe63d0f);
-                    const color = currentSize > 0 ? (currentOrderType === orderType.BUY ? bidColor : askColor) : new Color(0x333333);
+                    const color = (currentSize > 0) ? (currentOrderType === orderType.BUY ? bidColor : askColor) : new Color(0x333333);
                     this.sizeBox.setColorAt(meshIndex, color);
                 }
             }

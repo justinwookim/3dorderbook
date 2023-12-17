@@ -28,13 +28,7 @@ export class SceneManager {
                 element.material.dispose();
             }
         }
-
-        // If your application uses other Three.js object types with disposables,
-        // you can add additional checks and disposals here.
     }
-
-    // You can add more methods here to handle other scene-related functionalities.
-    // For example, updating elements, resetting the scene, etc.
 }
 
 
