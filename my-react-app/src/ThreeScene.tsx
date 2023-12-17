@@ -4,7 +4,7 @@ import { BookAnimation } from './3DBookAnimation';
 import { KrakenFeedHandler } from './FeedHandler/FeedHandler';
 import { OrderBook } from './OrderBook';
 import { InstrumentRepository, fetchBitMEXInstruments } from './CombinedInstruments';
-import DropDown from './Dropdown';
+import addDropDown from './Dropdown';
 import './style.css'; 
 
 
@@ -81,7 +81,7 @@ const ThreeScene = () => {
             // };
         // }
     // }, [instrumentRepository, updateOrderBook, orderBook]);
-    const dropdown = DropDown(instrumentRepository!, feedManager, animation, orderBook, 'ETH/USDT'); 
+    const dropdown = addDropDown(instrumentRepository!, feedManager, animation, orderBook, 'ETH/USDT'); 
 
     return dropdown; 
 
