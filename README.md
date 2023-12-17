@@ -43,7 +43,7 @@ This is a semester long project for IE 421 - High Frequency Trading Technology i
 
 ## Visuals
 
-![alt text]()
+![alt text](https://gitlab.engr.illinois.edu/ie421_high_frequency_trading_fall_2023/ie421_hft_fall_2023_group_03/group_03_project/visual.png)
 
 ## Installations
 ```sh
