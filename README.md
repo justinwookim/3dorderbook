@@ -43,7 +43,7 @@ This is a semester long project for IE 421 - High Frequency Trading Technology i
 
 ## Visuals
 
-Insert screenshots here.
+![alt text]()
 
 ## Installations
 ```sh
