@@ -13,7 +13,7 @@ This repository holds all the necessary components to visualize an orderbook fro
     - three.js
 
 ## Goal
-Our goal is to develop a 3D visualization of an order book to display financial instruments of an exchange with price, quantity, and depth. 
+Our goal is to develop a 3D visualization of an order book to display financial instruments of an exchange with price, quantity, and depth. Using the Kraken Websocket API, Three js library, and our implementation of an Order Book, we were able to create a realtime 3D visualization. 
 
 ## Description
 This is a semester long project for IE 421 - High Frequency Trading Technology instructed by Professor David Lariviere.
