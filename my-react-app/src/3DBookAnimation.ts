@@ -97,6 +97,9 @@ export class BookAnimation {
         const bids = this.orderBook.getBuyOrders(); 
         const asks = this.orderBook.getSellOrders(); 
 
+        const bidsPriceToQuantity = this.orderBook.getBuyMap(); 
+        const asksPriceToQuantity = this.orderBook.getSellMap(); 
+
         const bestBid = bids[0]; 
         const bestAsk = asks[0]; 
 
@@ -131,8 +134,10 @@ export class BookAnimation {
         for (let i = 0; i < this.numTicks; i++) {
             const bid = precisionRound(midPrice - (i * this.tickSize), this.precision); 
             const ask = precisionRound(midPrice + ((1 + i) * this.tickSize), this.precision); 
-            bids.forEach((order) => { if (order.price === bid) cumBid += order.quantity; }); 
-            asks.forEach((order) => { if (order.price === ask) cumAsk += order.quantity; }); 
+            // bids.forEach((order) => { if (order.price === bid) cumBid += order.quantity; }); 
+            // asks.forEach((order) => { if (order.price === ask) cumAsk += order.quantity; }); 
+            cumBid += bidsPriceToQuantity.get(bid) || 0; 
+            cumAsk += asksPriceToQuantity.get(ask) || 0; 
             sizeSlice[(this.numTicks - 1) - i] = this.scalingFactor * cumBid; 
             orderSlice[(this.numTicks - 1) - i] = orderType.BUY; 
             sizeSlice[this.numTicks + i] = this.scalingFactor * cumAsk; 
