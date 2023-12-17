@@ -4,13 +4,12 @@ import { BookAnimation } from './3DBookAnimation';
 import { KrakenFeedHandler } from './FeedHandler/FeedHandler';
 import { OrderBook } from './OrderBook';
 import { InstrumentRepository, fetchBitMEXInstruments } from './CombinedInstruments';
-import addDropDown from './Dropdown';
-import './style.css'; 
-
 
 const ThreeScene = () => {
     const [instrumentRepository, setInstrumentRepository] = useState<InstrumentRepository | null>(null);
     const [orderBook, setOrderBook] = useState(new OrderBook());
+    const [selectedInstrument, setSelectedInstrument] = useState('ETH/USDT'); // Default instrument
+    const [animation, setAnimation] = useState<BookAnimation | null>(null);
 
     const updateOrderBook = useCallback((updatedOrderBook: OrderBook) => {
         setOrderBook(updatedOrderBook);
@@ -37,16 +36,12 @@ const ThreeScene = () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            const animation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 100);
-            const tickSize = instrumentRepository?.getExchangeInstrument('Kraken', 'ETH/USDT')?.tickSize; 
-            // console.log("TICKSIZE", tickSize); 
-            if (tickSize) {
-                animation.setTickSize(tickSize); 
-            }
-            animation.create();
+            const newAnimation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 100);
+            newAnimation.create();
+            setAnimation(newAnimation);
 
-            const feedManager = new KrakenFeedHandler('ETH/USDT', orderBook, updateOrderBook);
-            feedManager.setBookAnimation(animation);
+            const feedManager = new KrakenFeedHandler(selectedInstrument, orderBook, updateOrderBook);
+            feedManager.setBookAnimation(newAnimation);
             feedManager.connect();
 
             const ambientLight = new HemisphereLight(0x999999);
@@ -68,7 +63,7 @@ const ThreeScene = () => {
 
             const animate = () => {
                 requestAnimationFrame(animate);
-                animation.update();
+                newAnimation.update();
                 renderer.render(scene, camera);
             };
             animate();
@@ -76,29 +71,25 @@ const ThreeScene = () => {
             return () => {
                 window.removeEventListener('resize', onWindowResize);
                 document.body.removeChild(renderer.domElement);
-                // animation.destroy();
                 feedManager.disconnect();
             };
         }
-    }, [instrumentRepository, updateOrderBook, orderBook]);
-    // const dropdown = addDropDown(instrumentRepository!, feedManager, animation, orderBook, 'ETH/USDT'); 
+    }, [instrumentRepository, selectedInstrument, updateOrderBook, orderBook]);
 
-    // return dropdown; 
+    const handleInstrumentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newInstrument = event.target.value;
+        setSelectedInstrument(newInstrument);
+    };
 
-    // return (
-    //     <div id="test">
-    //         TESTING
-    //         <button>TEST</button>
-    //     </div>
-    // );
-
-    // return <DropDown
-    //         InstrumentRepository={instrumentRepository} 
-    //         KrakenFeedHandler={feedManager}
-    //         animation={animation} 
-    //         OrderBook={orderBook} 
-    //         initialSymbol={'ETH/USDT'}/>; 
-    return <div id="gui">TESTING</div>
+    return (
+        <div id="gui">
+            <select onChange={handleInstrumentChange} value={selectedInstrument}>
+                {instrumentRepository && instrumentRepository.getExchangeInstruments('Kraken').map((instrument, index) => (
+                    <option key={index} value={instrument.symbol}>{instrument.symbol}</option>
+                ))}
+            </select>
+        </div>
+    );
 };
 
 export default ThreeScene;
