@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, Mesh, BufferAttribute, BoxGeometry, MeshLambertMaterial,  Color, Object3D, BufferGeometry, AxesHelper, MeshBasicMaterial, InstancedMesh } from 'three';
+import { Scene, PerspectiveCamera, Mesh, BufferAttribute, BoxGeometry, MeshLambertMaterial,  Color, Object3D, BufferGeometry, AxesHelper, MeshBasicMaterial, InstancedMesh, MeshNormalMaterial } from 'three';
 import { OrderBook, Order, orderType } from './OrderBook';
 import { SceneManager } from './Components/SceneManager';
 import { CameraManager } from './Components/CameraManager';
@@ -65,7 +65,7 @@ export class BookAnimation {
                 this.textArray.push(txt); 
             }
             this.recalculate();
-            this.draw();
+            // this.draw();
         } catch (error) {
             console.error('Error in creating BookAnimation:', error);
         }
