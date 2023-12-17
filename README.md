@@ -1,24 +1,19 @@
-# group_03_project
+# Visualization of Kraken Crypto Exchange Orderbooks in 3 Dimensions
 
-## Running the Website Locally
-** Getting Started with Create React App **
+This repository holds all the necessary components to visualize an orderbook from Kraken Crypto Exchange in 3 dimensions. Historically, L2 Orderbooks have been used to display the bid ask spread as a function of price and time. Here we have developed our own orderbook to hold Kraken Data, Feedhandlers to pull from the public API, and a React App using the three.js library to visualize an order book for any currency in the Kraken Exchange as a function of price, time and a third component, depth. 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-** Available Scripts **
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Components:
+- Backend
+    - Typescript
+    - KrakenAPI
+    - Websocket
+- Frontend
+    - HTML/CSS
+    - React
+    - three.js
 
 ## Goal
-Our goal is to help visualize orderbooks of different exchanges as a function of time. 
+Our goal is to develop a 3D visualization of an order book to display financial instruments of an exchange with price, quantity, and depth. 
 
 ## Description
 This is a semester long project for IE 421 - High Frequency Trading Technology instructed by Professor David Lariviere.
@@ -50,6 +45,13 @@ This is a semester long project for IE 421 - High Frequency Trading Technology i
 
 Insert screenshots here.
 
+## Installations
+```sh
+cd my-react-app
+npm install
+npm start
+```
+
 ## Features
 - Shows Kraken Crypto Exchange bid ask spread in real time. 
 - Orderbook animations to show the bid ask spread as a function of price, quantity, and depth. 
@@ -61,3 +63,5 @@ Insert screenshots here.
 - Add frontend functionality to visualize exchanges around the world, showing trades executing from different locations.
 - Add historical menu to see visualizations for past market data, such as the flash crash. 
 - Edit animation to center the market in our camera. 
+- Add trade indicators or have a status bar for trades occuring
+- Optimize orderbook and animations to run smoother for the client. 
