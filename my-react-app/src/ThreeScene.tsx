@@ -29,61 +29,61 @@ const ThreeScene = () => {
         initializeInstruments();
     }, []);
 
-    // useEffect(() => {
-        // if (instrumentRepository) {
-    const scene = new Scene();
-    const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    useEffect(() => {
+        if (instrumentRepository) {
+            const scene = new Scene();
+            const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
 
-    const animation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 100);
-    const tickSize = instrumentRepository?.getExchangeInstrument('Kraken', 'ETH/USDT')?.tickSize; 
-    // console.log("TICKSIZE", tickSize); 
-    if (tickSize) {
-        animation.setTickSize(tickSize); 
-    }
-    animation.create();
+            const animation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 100);
+            const tickSize = instrumentRepository?.getExchangeInstrument('Kraken', 'ETH/USDT')?.tickSize; 
+            // console.log("TICKSIZE", tickSize); 
+            if (tickSize) {
+                animation.setTickSize(tickSize); 
+            }
+            animation.create();
 
-    const feedManager = new KrakenFeedHandler('ETH/USDT', orderBook, updateOrderBook);
-    feedManager.setBookAnimation(animation);
-    feedManager.connect();
+            const feedManager = new KrakenFeedHandler('ETH/USDT', orderBook, updateOrderBook);
+            feedManager.setBookAnimation(animation);
+            feedManager.connect();
 
-    const ambientLight = new HemisphereLight(0x999999);
-    scene.add(ambientLight);
+            const ambientLight = new HemisphereLight(0x999999);
+            scene.add(ambientLight);
 
-    const pointLight = new PointLight(0x999999, 1.1);
-    pointLight.position.set(0, 100, -100);
-    scene.add(pointLight);
+            const pointLight = new PointLight(0x999999, 1.1);
+            pointLight.position.set(0, 100, -100);
+            scene.add(pointLight);
 
-    scene.background = new Color(0x222222);
-    scene.fog = new Fog(0x222222, 360, 400);
+            scene.background = new Color(0x222222);
+            scene.fog = new Fog(0x222222, 360, 400);
 
-    const onWindowResize = () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-    window.addEventListener('resize', onWindowResize);
+            const onWindowResize = () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            };
+            window.addEventListener('resize', onWindowResize);
 
-    const animate = () => {
-        requestAnimationFrame(animate);
-        animation.update();
-        renderer.render(scene, camera);
-    };
-    animate();
+            const animate = () => {
+                requestAnimationFrame(animate);
+                animation.update();
+                renderer.render(scene, camera);
+            };
+            animate();
 
-            // return () => {
-            //     window.removeEventListener('resize', onWindowResize);
-            //     document.body.removeChild(renderer.domElement);
-            //     // animation.destroy();
-            //     feedManager.disconnect();
-            // };
-        // }
-    // }, [instrumentRepository, updateOrderBook, orderBook]);
-    const dropdown = addDropDown(instrumentRepository!, feedManager, animation, orderBook, 'ETH/USDT'); 
+            return () => {
+                window.removeEventListener('resize', onWindowResize);
+                document.body.removeChild(renderer.domElement);
+                // animation.destroy();
+                feedManager.disconnect();
+            };
+        }
+    }, [instrumentRepository, updateOrderBook, orderBook]);
+    // const dropdown = addDropDown(instrumentRepository!, feedManager, animation, orderBook, 'ETH/USDT'); 
 
-    return dropdown; 
+    // return dropdown; 
 
     // return (
     //     <div id="test">
@@ -98,6 +98,7 @@ const ThreeScene = () => {
     //         animation={animation} 
     //         OrderBook={orderBook} 
     //         initialSymbol={'ETH/USDT'}/>; 
+    return <div id="gui">TESTING</div>
 };
 
 export default ThreeScene;
