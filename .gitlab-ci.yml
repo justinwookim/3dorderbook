@@ -4,7 +4,7 @@ stages:
   - deploy
 
 pages:
-    stage: deplooy
+    stage: deploy
 
     script:
         - cd my-react-app
