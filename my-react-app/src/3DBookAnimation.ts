@@ -82,8 +82,6 @@ export class BookAnimation {
 
 
     recalculate() {
-        // Logic to update your scaling factor, price history, size, and side matrices
-        // This should be based on the current state of your order book
         for (let i = 0; i < this.maxDepth; i++) {
             this.sizeMatrix.push(Array(2 * this.numTicks).fill(0)); 
             this.orderMatrix.push(Array(2 * this.numTicks).fill(orderType.BUY)); 
