@@ -96,23 +96,18 @@ export class BookAnimation {
         const bestBid = bids[0]; 
         const bestAsk = asks[0]; 
 
-        let midPrice: number = 0; 
-        if (bids.length === 0 && asks.length === 0) {
-            midPrice = 0; 
-        } else if (asks.length === 0) {
-            midPrice = bestBid.price; 
-        } else if (bids.length === 0) {
-            midPrice = bestAsk.price - this.tickSize; 
-        } else {
-            midPrice = precisionRound(roundDownToTick(1, (bestBid.price + bestAsk.price) / 2), this.precision); 
-        }
+        let middlepriceval: number = 0; 
+    
+  
+        middlepriceval = precisionRound(roundDownToTick(1, (bestBid.price + bestAsk.price) / 2), this.precision); 
+        
         
         if (this.priceFlag) {
-            this.priceHistory = Array(this.maxDepth).fill(midPrice); 
+            this.priceHistory = Array(this.maxDepth).fill(middlepriceval); 
             this.priceFlag = false; 
         }
 
-        this.priceHistory.unshift(midPrice); 
+        this.priceHistory.unshift(middlepriceval); 
         if (this.priceHistory.length > this.maxDepth) {
             this.priceHistory.pop(); 
         }
@@ -125,8 +120,8 @@ export class BookAnimation {
         SizeSection.push(...Array(2 * this.numTicks).fill(0)); 
         OrderSection.push(...Array(2 * this.numTicks).fill(orderType.BUY)); 
         for (let i = 0; i < this.numTicks; i++) {
-            const bid = precisionRound(midPrice - (i * this.tickSize), this.precision); 
-            const ask = precisionRound(midPrice + ((1 + i) * this.tickSize), this.precision); 
+            const bid = precisionRound(middlepriceval - (i * this.tickSize), this.precision); 
+            const ask = precisionRound(middlepriceval + ((1 + i) * this.tickSize), this.precision); 
             TotalBid += bidsPriceToQuantity.get(bid) || 0; 
             TotAsk += asksPriceToQuantity.get(ask) || 0; 
             SizeSection[(this.numTicks - 1) - i] = this.scalingFactor * TotalBid; 
