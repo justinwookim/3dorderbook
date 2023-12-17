@@ -12,6 +12,8 @@ export interface Order {
 export class OrderBook {
     private buyOrders: Order[];
     private sellOrders: Order[];
+    private buysPriceToQuantity: Map<number,number> = new Map()
+    private sellsPriceToQuantity: Map<number,number> = new Map()
 
     constructor() {
         this.buyOrders = [];
@@ -21,6 +23,8 @@ export class OrderBook {
     addOrder(order: Order) {
         const orderList = order.orderType === 'BUY' ? this.buyOrders : this.sellOrders;
         orderList.push(order);
+        const priceToQuantity = order.orderType == 'BUY' ? this.buysPriceToQuantity : this.sellsPriceToQuantity; 
+        priceToQuantity.set(order.price, order.quantity); 
         this.sortOrders(orderList, order.orderType);
     }
 
@@ -58,6 +62,14 @@ export class OrderBook {
 
     getSellOrders() {
         return this.sellOrders;
+    }
+
+    getBuyMap() {
+        return this.buysPriceToQuantity; 
+    }
+
+    getSellMap() {
+        return this.sellsPriceToQuantity
     }
 
     // for debugging the data 
