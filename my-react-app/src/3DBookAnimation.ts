@@ -65,7 +65,7 @@ export class BookAnimation {
                 this.textArray.push(txt); 
             }
             this.recalculate();
-            // this.draw();
+            this.draw();
         } catch (error) {
             console.error('Error in creating BookAnimation:', error);
         }
@@ -86,7 +86,7 @@ export class BookAnimation {
         this.recalculate();
     }
 
-    private recalculate() {
+    recalculate() {
         // Logic to update your scaling factor, price history, size, and side matrices
         // This should be based on the current state of your order book
         for (let i = 0; i < this.maxDepth; i++) {
@@ -154,7 +154,7 @@ export class BookAnimation {
         }
     }
 
-    private draw() {
+    draw() {
         const midPrice = this.priceHistory[0]; 
 
         const dummy = new Object3D(); 

@@ -16,6 +16,10 @@ export class KrakenFeedHandler {
         this.updateOrderBookState = updateOrderBookState;
     }
 
+    setSymbol(symbol: string) {
+        this.tradingSymbol = symbol; 
+    }
+
     setBookAnimation(animation: BookAnimation) {
         this.bookAnimation = animation;
     }
