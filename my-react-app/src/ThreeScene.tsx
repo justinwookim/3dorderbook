@@ -9,7 +9,6 @@ const ThreeScene = () => {
     const [instrumentRepository, setInstrumentRepository] = useState<InstrumentRepository | null>(null);
     const [orderBook, setOrderBook] = useState(new OrderBook());
     const [selectedInstrument, setSelectedInstrument] = useState('ETH/USDT'); // Default instrument
-    const [animation, setAnimation] = useState<BookAnimation | null>(null);
 
     const updateOrderBook = useCallback((updatedOrderBook: OrderBook) => {
         setOrderBook(updatedOrderBook);
@@ -38,7 +37,6 @@ const ThreeScene = () => {
 
             const newAnimation = new BookAnimation(scene, camera, orderBook, renderer.domElement, 100);
             newAnimation.create();
-            setAnimation(newAnimation);
 
             const feedManager = new KrakenFeedHandler(selectedInstrument, orderBook, updateOrderBook);
             feedManager.setBookAnimation(newAnimation);

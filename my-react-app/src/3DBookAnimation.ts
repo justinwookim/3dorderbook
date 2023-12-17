@@ -80,11 +80,6 @@ export class BookAnimation {
         }
     }
 
-    setTickSize(newTickSize: number) {
-        this.tickSize = newTickSize;
-        this.precision = getPrecision(newTickSize); 
-        this.recalculate();
-    }
 
     recalculate() {
         // Logic to update your scaling factor, price history, size, and side matrices
@@ -124,28 +119,26 @@ export class BookAnimation {
             this.priceHistory.pop(); 
         }
         
-        let cumBid = 0; 
-        let cumAsk = 0; 
-        const sizeSlice = []; 
-        const orderSlice = []; 
+        let TotalBid = 0; 
+        let TotAsk = 0; 
+        const SizeSection = []; 
+        const OrderSection = []; 
 
-        sizeSlice.push(...Array(2 * this.numTicks).fill(0)); 
-        orderSlice.push(...Array(2 * this.numTicks).fill(orderType.BUY)); 
+        SizeSection.push(...Array(2 * this.numTicks).fill(0)); 
+        OrderSection.push(...Array(2 * this.numTicks).fill(orderType.BUY)); 
         for (let i = 0; i < this.numTicks; i++) {
             const bid = precisionRound(midPrice - (i * this.tickSize), this.precision); 
             const ask = precisionRound(midPrice + ((1 + i) * this.tickSize), this.precision); 
-            // bids.forEach((order) => { if (order.price === bid) cumBid += order.quantity; }); 
-            // asks.forEach((order) => { if (order.price === ask) cumAsk += order.quantity; }); 
-            cumBid += bidsPriceToQuantity.get(bid) || 0; 
-            cumAsk += asksPriceToQuantity.get(ask) || 0; 
-            sizeSlice[(this.numTicks - 1) - i] = this.scalingFactor * cumBid; 
-            orderSlice[(this.numTicks - 1) - i] = orderType.BUY; 
-            sizeSlice[this.numTicks + i] = this.scalingFactor * cumAsk; 
-            orderSlice[this.numTicks + i] = orderType.SELL; 
+            TotalBid += bidsPriceToQuantity.get(bid) || 0; 
+            TotAsk += asksPriceToQuantity.get(ask) || 0; 
+            SizeSection[(this.numTicks - 1) - i] = this.scalingFactor * TotalBid; 
+            OrderSection[(this.numTicks - 1) - i] = orderType.BUY; 
+            SizeSection[this.numTicks + i] = this.scalingFactor * TotAsk; 
+            OrderSection[this.numTicks + i] = orderType.SELL; 
         }
 
-        this.sizeMatrix.unshift(sizeSlice); 
-        this.orderMatrix.unshift(orderSlice); 
+        this.sizeMatrix.unshift(SizeSection); 
+        this.orderMatrix.unshift(OrderSection); 
         if (this.sizeMatrix.length > this.maxDepth) {
             this.sizeMatrix.pop(); 
         }
@@ -154,25 +147,26 @@ export class BookAnimation {
         }
     }
 
+
     draw() {
         const midPrice = this.priceHistory[0]; 
 
-        const dummy = new Object3D(); 
+        const ThreeD_Obj = new Object3D(); 
         for (let i = 0; i < this.maxDepth; i++) {
             const horizontalOffset = Math.round((this.priceHistory[i] - midPrice) / this.tickSize); 
             for (let j = 0; j < 2 * this.numTicks; j++) {
                 const index = (2 * i * this.numTicks) + j; 
 
-                dummy.position.x = horizontalOffset + (j - this.numTicks); 
-                dummy.position.z = -i; 
+                ThreeD_Obj.position.x = horizontalOffset + (j - this.numTicks); 
+                ThreeD_Obj.position.z = -i; 
                 
                 const size = this.sizeMatrix[i][j]; 
                 const order = this.orderMatrix[i][j]; 
 
-                dummy.scale.y = size === 0 ? 0.0001 : size; 
-                dummy.position.y = dummy.scale.y / 2; 
-                dummy.updateMatrix()
-                this.sizeBox!.setMatrixAt(index, dummy.matrix); 
+                ThreeD_Obj.scale.y = size === 0 ? 0.0001 : size; 
+                ThreeD_Obj.position.y = ThreeD_Obj.scale.y / 2; 
+                ThreeD_Obj.updateMatrix()
+                this.sizeBox!.setMatrixAt(index, ThreeD_Obj.matrix); 
                 let color = new Color(0x333333); 
                 const bidColor = new Color(0x0abc41); 
                 const askColor = new Color(0xe63d0f); 
@@ -192,6 +186,11 @@ export class BookAnimation {
             this.textArray[i].text = price.toLocaleString(undefined, { minimumFractionDigits: this.precision }); 
         }
     }
+
+
+
+
+    
 
     private createBoxGeometry(width: number, height: number, depth: number) {
         const geometry = new BufferGeometry();
@@ -229,3 +228,12 @@ export class BookAnimation {
         return geometry;
     }
 }
+
+
+
+
+
+
+
+
+
