@@ -149,43 +149,48 @@ export class BookAnimation {
 
 
     draw() {
-        const midPrice = this.priceHistory[0]; 
+        const referenceMidPrice = this.priceHistory[0];
+        const tempObject3D = new Object3D();
 
-        const ThreeD_Obj = new Object3D(); 
-        for (let i = 0; i < this.maxDepth; i++) {
-            const horizontalOffset = Math.round((this.priceHistory[i] - midPrice) / this.tickSize); 
-            for (let j = 0; j < 2 * this.numTicks; j++) {
-                const index = (2 * i * this.numTicks) + j; 
+        for (let depthIndex = 0; depthIndex < this.maxDepth; depthIndex++) {
+            const horizontalOffset = Math.round((this.priceHistory[depthIndex] - referenceMidPrice) / this.tickSize);
 
-                ThreeD_Obj.position.x = horizontalOffset + (j - this.numTicks); 
-                ThreeD_Obj.position.z = -i; 
-                
-                const size = this.sizeMatrix[i][j]; 
-                const order = this.orderMatrix[i][j]; 
+            for (let tickIndex = 0; tickIndex < 2 * this.numTicks; tickIndex++) {
+                const meshIndex = (2 * depthIndex * this.numTicks) + tickIndex;
+                tempObject3D.position.x = horizontalOffset + (tickIndex - this.numTicks);
+                tempObject3D.position.z = -depthIndex;
 
-                ThreeD_Obj.scale.y = size === 0 ? 0.0001 : size; 
-                ThreeD_Obj.position.y = ThreeD_Obj.scale.y / 2; 
-                ThreeD_Obj.updateMatrix()
-                this.sizeBox!.setMatrixAt(index, ThreeD_Obj.matrix); 
-                let color = new Color(0x333333); 
-                const bidColor = new Color(0x0abc41); 
-                const askColor = new Color(0xe63d0f); 
-                if (size > 0) {
-                    color = (order === orderType.BUY) ? bidColor : askColor; 
+                const currentSize = this.sizeMatrix[depthIndex][tickIndex];
+                const currentOrderType = this.orderMatrix[depthIndex][tickIndex];
+
+                tempObject3D.scale.y = currentSize === 0 ? 0.0001 : currentSize;
+                tempObject3D.position.y = tempObject3D.scale.y / 2;
+                tempObject3D.updateMatrix();
+
+                if (this.sizeBox) {
+                    this.sizeBox.setMatrixAt(meshIndex, tempObject3D.matrix);
+                    const bidColor = new Color(0x0abc41);
+                    const askColor = new Color(0xe63d0f);
+                    const color = currentSize > 0 ? (currentOrderType === orderType.BUY ? bidColor : askColor) : new Color(0x333333);
+                    this.sizeBox.setColorAt(meshIndex, color);
                 }
-                this.sizeBox!.setColorAt(index, color); 
             }
         }
-        this.sizeBox!.instanceMatrix.needsUpdate = true; 
-        if (this.sizeBox!.instanceColor !== null) {
-            this.sizeBox!.instanceColor.needsUpdate = true; 
+
+        if (this.sizeBox) {
+            this.sizeBox.instanceMatrix.needsUpdate = true;
+            if (this.sizeBox.instanceColor) {
+                this.sizeBox.instanceColor.needsUpdate = true;
+            }
         }
 
-        for (let i = 0; i < this.numLabels; i++) {
-            const price = midPrice + ((i - this.numLabelsPerSide) * 10 * this.tickSize); 
-            this.textArray[i].text = price.toLocaleString(undefined, { minimumFractionDigits: this.precision }); 
+        for (let labelIndex = 0; labelIndex < this.numLabels; labelIndex++) {
+            const priceAtLabel = referenceMidPrice + ((labelIndex - this.numLabelsPerSide) * 10 * this.tickSize);
+            this.textArray[labelIndex].text = priceAtLabel.toLocaleString(undefined, { minimumFractionDigits: this.precision });
         }
     }
+
+    
 
 
 
