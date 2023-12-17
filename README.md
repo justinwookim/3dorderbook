@@ -76,11 +76,13 @@ This is a semester long project for IE 421 - High Frequency Trading Technology i
 Insert screenshots here.
 
 ## Features
-- Shows bitmex and __ exchanges orders being executed as a function of time. 
-- Various camera angles to move through exchange data
-- Filter data based on currency symbols
+- Shows Kraken Crypto Exchange bid ask spread in real time. 
+- Orderbook animations to show the bid ask spread as a function of price, quantity, and depth. 
+- Dropdown menu to filter data based on currency symbols, such as 'ETH/USDT' 
 
 ## Potential future ideas
 
-- Add more exchanges.
+- We would like to add more exchanges done via adding new feedhandlers and creating a dropdown option for exchanges. 
 - Add frontend functionality to visualize exchanges around the world, showing trades executing from different locations.
+- Add historical menu to see visualizations for past market data, such as the flash crash. 
+- Edit animation to center the market in our camera. 
